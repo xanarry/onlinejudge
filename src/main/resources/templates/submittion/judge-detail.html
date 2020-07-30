@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>提交记录</title>
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/oj.css">
+
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/js/bootstrap/popper.min.js"></script>
+    <script src="/js/bootstrap/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="/plugin/highlight/css/default.css">
+    <script src="/plugin/highlight/js/highlight.pack.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            hljs.initHighlighting();
+        });
+    </script>
+</head>
+<body>
+<div th:include="navbar :: commonNavBar"></div>
+<div class="container custom-container">
+    <div class="card">
+        <h5 class="card-header">详细评测结果</h5>
+        <table class="table table-sm table-striped" style="margin-bottom: 0rem;">
+            <thead>
+            <tr>
+                <th class="text-center">测试点</th>
+                <th class="text-center">耗时(ms)</th>
+                <th class="text-center">内存(KB)</th>
+                <th class="text-center">结果</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="detail: ${detailList}">
+                <tr>
+                    <td class="text-center" th:text="'#' + ${detail.testPointID}"></td>
+                    <td class="text-center" th:text="${detail.timeConsume}"></td>
+                    <td class="text-center" th:text="${detail.memConsume}"></td>
+                    <td class="text-center">
+                        <th:block th:switch="${detail.result}">
+                            <span th:case="${'Queuing'}"
+                                  class="badge badge-secondary" th:text="${detail.result}"></span>
+                            <span th:case="${'Compiling'}"
+                                  class="badge badge-secondary" th:text="${detail.result}"></span>
+                            <span th:case="${'Running'}"
+                                  class="badge badge-primary" th:text="${detail.result}"></span>
+                            <span th:case="${'Accepted'}"
+                                  class="badge badge-success" th:text="${detail.result}"></span>
+                            <span th:case="${'Presentation Error'}"
+                                  class="badge badge-warning" th:text="${detail.result}"></span>
+                            <span th:case="${'Wrong Answer'}"
+                                  class="badge badge-danger" th:text="${detail.result}"></span>
+                            <span th:case="${'Time Limit Exceeded'}"
+                                  class="badge badge-warning" th:text="${detail.result}"></span>
+                            <span th:case="${'Memory Limit Exceeded'}"
+                                  class="badge badge-warning" th:text="${detail.result}"></span>
+                            <span th:case="${'Output Limit Exceeded'}"
+                                  class="badge badge-warning" ${detail.result}></span>
+                            <span th:case="${'Runtime Error'}"
+                                  class="badge badge-danger" ${detail.result}></span>
+                            <span th:case="${'System Error'}"
+                                  class="badge badge-dark" ${detail.result}></span>
+                            <span th:case="${'Compilation Error'}"
+                                  class="badge badge-warning" ${detail.result}></span>
+                        </th:block>
+                    </td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+    </div>
+
+    <br>
+
+    <th:block th:if="${(session.userID != null and session.userID == record.userID) or session.userType > 0}">
+        <h4>源代码&nbsp;<small class="text-muted" th:text="${record.language}"></small></h4>
+        <pre><code class="form-control" th:text="${record.sourceCode}"></code></pre>
+
+        <th:block th:if="${#strings.length(compileInfo.compileResult) > 0}">
+            <h4>编译信息</h4>
+            <pre><code class="form-control" th:text="${compileInfo.compileResult}"></code></pre>
+        </th:block>
+
+        <!--如果错误信息不为空, 并且登录用户不是普通用户, 显示错误信息-->
+        <th:block
+                th:if="${systemError != null and #strings.length(systemError.errorMessage) > 0 and session.userType != null and session.userType > 0}">
+            <h4>错误信息</h4>
+            <pre><code class="form-control" th:text="${systemError.errorMessage}"></code></pre>
+        </th:block>
+    </th:block>
+
+    <div class="text-center">
+        <th:block th:switch="${record.contestID != 0}">
+            <a th:case="${true}" class="btn btn-primary"
+               th:href="'/contest-record-list?contestID=' + ${record.contestID}">返回列表</a>
+            <a class="btn btn-primary" th:case="*" href="/record-list">返回列表</a>
+        </th:block>
+
+
+        <a th:if="${session.userType != null and session.userType > 0}" class="btn btn-warning"
+           th:href="'/rejudge?submitID=' + ${record.submitID}">重新评测</a>
+
+    </div>
+
+
+    <div th:include="footer :: commonFooter"></div>
+</body>
+</html>
+

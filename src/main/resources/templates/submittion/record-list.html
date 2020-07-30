@@ -1,0 +1,126 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>提交记录</title>
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/oj.css">
+
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/js/bootstrap/popper.min.js"></script>
+    <script src="/js/bootstrap/bootstrap.min.js"></script>
+</head>
+<body>
+<div th:include="navbar :: commonNavBar"></div>
+<div class="container custom-container">
+    <br>
+    <form action="/record-list" method="get">
+        <div class="input-group">
+            <span class="input-group-addon">用户名:</span>
+            <input name="userName" type="text" value="" class="form-control">
+            <span class="input-group-addon">题号:</span>
+            <input name="problemID" type="text" value="" class="form-control">
+
+            <span class="input-group-addon">评测结果:</span>
+            <select name="result" class="form-control">
+                <option value="">All</option>
+                <option value="Accepted">Accepted</option>
+                <option value="Presentation Error">Presentation Error</option>
+                <option value="Time Limit Exceeded">Time Limit Exceeded</option>
+                <option value="Memory Limit Exceeded">Memory Limit Exceeded</option>
+                <option value="Wrong Answer">Wrong Answer</option>
+                <option value="Runtime Error">Runtime Error</option>
+                <option value="Output Limit Exceeded">Output Limit Exceeded</option>
+                <option value="Compilation Error">Compilation Error</option>
+                <option value="System Error">System Error</option>
+            </select>
+
+            <span class="input-group-addon">语言:</span>
+            <select name="language" class="form-control">
+                <option value="">All</option>
+                <option value="C">C</option>
+                <option value="C++">C++</option>
+                <option value="Java">Java</option>
+                <option value="Python2">Python2</option>
+                <option value="Python3">Python3</option>
+            </select>
+            <span class="input-group-btn"><button class="btn btn-default">查询</button></span>
+        </div>
+    </form>
+
+    <div class="card">
+
+        <table class="table table-striped text-center" style="margin-bottom: 0rem;">
+            <thead>
+            <tr>
+                <th>提交ID</th>
+                <th>用户</th>
+                <th>题号</th>
+                <th>耗时(ms)</th>
+                <th>内存(KB)</th>
+                <th>语言</th>
+                <th>代码长度(字节)</th>
+                <th>提交时间</th>
+                <th>结果</th>
+                <th th:if="${session.userType != null and session.userType > 0}">重测</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="record: ${recordList}">
+                <tr>
+                    <td th:text="${record.submitID}"></td>
+                    <td><a th:href="'/user?userID='+${record.userID}" th:text="${record.userName}"> </a></td>
+                    <td><a th:href="'/problem?problemID='+${record.problemID}"
+                           th:text="${1000 + record.problemID}"> </a></td>
+                    <td th:text="${record.timeConsume}"></td>
+                    <td th:text="${record.memConsume}"></td>
+                    <td><span class="badge badge-secondary" th:text="${record.language}"></span></td>
+                    <td th:text="${record.codeLength}"></td>
+
+                    <td th:text="${#dates.format(record.submitTime, 'yyyy/MM/dd HH:mm:ss')}"></td>
+                    <td>
+                        <a th:href="'/judge-detail?submitID='+${record.submitID}">
+                            <th:block th:switch="${record.result}">
+                                        <span th:case="${'Queuing'}" class="badge badge-secondary"
+                                              th:text="${record.result}"></span>
+                                <span th:case="${'Compiling'}" class="badge badge-secondary"
+                                      th:text="${record.result}"></span>
+                                <span th:case="${'Running'}" class="badge badge-primary"
+                                      th:text="${record.result}"></span>
+                                <span th:case="${'Accepted'}" class="badge badge-success"
+                                      th:text="${record.result}"></span>
+                                <span th:case="${'Presentation Error'}" class="badge badge-warning"
+                                      th:text="${record.result}"></span>
+                                <span th:case="${'Wrong Answer'}" class="badge badge-danger"
+                                      th:text="${record.result}"></span>
+                                <span th:case="${'Time Limit Exceeded'}" class="badge badge-warning"
+                                      th:text="${record.result}"></span>
+                                <span th:case="${'Memory Limit Exceeded'}" class="badge badge-warning"
+                                      th:text="${record.result}"></span>
+                                <span th:case="${'Output Limit Exceeded'}" class="badge badge-warning"
+                                      th:text="${record.result}"></span>
+                                <span th:case="${'Runtime Error'}" class="badge badge-danger"
+                                      th:text="${record.result}"></span>
+                                <span th:case="${'System Error'}" class="badge badge-dark"
+                                      th:text="${record.result}"></span>
+                                <span th:case="${'Compilation Error'}" class="badge badge-warning"
+                                      th:text="${record.result}"></span>
+                            </th:block>
+                        </a>
+                    </td>
+
+                    <td th:if="${session.userType != null and session.userType > 0}">
+                        <a class="badge badge-primary"
+                           th:href="'/rejudge?submitID='+${record.submitID}">重测</a>
+                    </td>
+
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+    </div>
+    <br>
+    <div th:if="${pagination != null}" th:include="pagination :: pageBar"></div>
+    <div th:include="footer :: commonFooter"></div>
+</div>
+</body>
+</html>

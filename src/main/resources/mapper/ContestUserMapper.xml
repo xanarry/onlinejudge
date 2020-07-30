@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xanarry.onlinejudge.dao.ContestUserDao">
+    <insert id="addUser">
+        INSERT INTO t_contest_user (contest_id, user_id, user_name) VALUES
+        (#{contestID}, #{userID}, #{userName})
+    </insert>
+
+    <delete id="deleteUser">
+        DELETE FROM t_contest_user
+        WHERE 1=1
+        <if test="contestID != null">
+            AND contest_id=#{contestID}
+        </if>
+        <if test="userID != null">
+            AND user_id=#{userID}
+        </if>
+        <if test="contestID == null and userID==null">
+            AND 1=2
+        </if>
+    </delete>
+
+    <select id="checkUserRegistered" resultType="java.lang.Boolean">
+        SELECT COUNT(user_id)=1 FROM t_contest_user WHERE contest_id=#{contestID} AND user_id=#{userID}
+    </select>
+
+    <select id="getContestUserList" resultMap="contestUserMap"
+            resultType="com.xanarry.onlinejudge.model.ContestUserBean">
+      SELECT * FROM t_contest_user WHERE contest_id=#{contestID}
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM t_contest_user
+    </select>
+
+    <select id="getContestUserCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM t_contest_user WHERE contest_id=#{contestID}
+    </select>
+
+
+    <resultMap id="contestUserMap" type="com.xanarry.onlinejudge.model.ContestUserBean">
+        <id property="contestID" column="contest_id"/>
+        <id property="userID" column="user_id"/>
+        <result property="userName" column="user_name"/>
+    </resultMap>
+</mapper>

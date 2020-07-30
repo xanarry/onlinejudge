@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>题目列表</title>
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/font-awesome.css">
+    <link rel="stylesheet" href="/css/oj.css">
+
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/js/bootstrap/popper.min.js"></script>
+    <script src="/js/bootstrap/bootstrap.min.js"></script>
+</head>
+<body>
+<div th:include="navbar :: commonNavBar"></div>
+<div class="container custom-container">
+    <h4 th:text="${tableTitle}"></h4>
+    <div class="card">
+        <table class="table table-striped text-center" style="margin-bottom: 0rem;">
+            <thead>
+            <tr>
+                <th th:if="${session.userID != null}">状态</th>
+                <th>题号</th>
+                <th>题目名称</th>
+                <th>通过(人)/提交(次)</th>
+                <th>日期</th>
+                <th th:if="${session.userType != null and session.userType > 0}">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="problem: ${problemList}">
+                <tr>
+                    <th:block th:if="${session.userID != null}">
+                        <th:block th:switch="${problem.result == 'Accepted'}">
+                            <td th:case="${true}">
+                                <span class="badge badge-success"><i class="fa fa-check"></i></span>
+                            </td>
+                            <td th:case="*"><span class="badge badge-secondary"></span></td>
+                        </th:block>
+                    </th:block>
+                    <td><a th:href="'problem?problemID=' + ${problem.problemID}"
+                           th:text="${1000 + problem.problemID}"></a>
+                    </td>
+                    <td><a th:href="'problem?problemID=' + ${problem.problemID}" th:text="${problem.title}"></a></td>
+                    <td th:text="${problem.accepted} + '/' + ${problem.submitted}"></td>
+                    <td th:text="${#dates.format(problem.createTime, 'yyyy/MM/dd')}"></td>
+                    <td th:if="${session.userType != null and session.userType > 0}">
+                        <a th:href="'/record-list?problemID=' + ${problem.problemID}"><span
+                                class="badge badge-light">记录</span></a>
+                        <a th:href="'/test-point-list?problemID=' + ${problem.problemID}"><span
+                                class="badge badge-secondary">数据</span></a>
+                        <a th:href="'/problem-edit?problemID=' + ${problem.problemID}"><span
+                                class="badge badge-primary">编辑</span></a>
+                    </td>
+                </tr>
+            </th:block>
+
+            </tbody>
+        </table>
+    </div>
+    <br>
+
+    <div th:if="${pagination != null}" th:include="pagination :: pageBar"></div>
+
+    <div th:include="footer :: commonFooter"></div>
+</div>
+</body>
+</html>

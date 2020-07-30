@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="commonFooter">
+    <br>
+    <footer class="footer" th:with="currentTimeStamp=${new java.util.Date().getTime()}">
+        <div class="container text-center" style="margin-top: 70px">
+            <ul class="list-inline">
+                <li class="list-inline-item"><a href="/judge-server">评测机</a></li>
+                <li class="list-inline-item"><a href="/contact-me">联系我</a></li>
+                <li class="list-inline-item"><a href="/about">关于</a></li>
+                <li class="list-inline-item"><a href="/faq">FAQ</a></li>
+            </ul>
+            <span class="text-muted">Copyright©<span th:text="${#dates.format(currentTimeStamp, 'yyyy')}"></span> Xanarry. All rights reserved.</span>
+            <p></p>
+        </div>
+    </footer>
+</div>

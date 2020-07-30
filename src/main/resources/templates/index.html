@@ -1,0 +1,132 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>首页</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/oj.css">
+
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/js/bootstrap/popper.min.js"></script>
+    <script src="/js/bootstrap/bootstrap.min.js"></script>
+
+</head>
+<body>
+
+<div th:include="navbar :: commonNavBar"></div>
+
+<div class="container custom-container">
+    <div class="jumbotron" style="background-size: cover; background-image: url('/img/b.gif');">
+        <br><br><br><br><br><br><br>
+        <div class="text-center">
+            <a class="btn btn-lg btn-success" href="/problem-list" role="button">开始做题</a>
+        </div>
+    </div>
+
+
+    <h4>最近比赛</h4>
+    <table class="table table-striped text-center" th:with="currentTimeStamp=${new java.util.Date().getTime()}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>标题</th>
+            <th>状态</th>
+            <th>开始时间</th>
+            <th>结束时间</th>
+            <th>比赛赛制</th>
+            <th>比赛类型</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr th:each="contest: ${latestContest}">
+            <td><a th:text="${contest.contestID}"></a></td>
+            <td><a th:href="'/contest-overview?contestID=' + ${contest.contestID}" th:text="${contest.title}"></a></td>
+
+
+            <td th:if="${currentTimeStamp < contest.registerStartTime}">
+                <span class="badge badge-info">即将到来</span>
+            </td>
+            <td th:if="${currentTimeStamp > contest.startTime and currentTimeStamp < contest.endTime}">
+                <span class="badge badge-success">进行中</span>
+            </td>
+            <td th:if="${currentTimeStamp > contest.registerStartTime and currentTimeStamp < contest.registerEndTime}"><span
+                    class="badge badge-primary">报名中</span>
+            </td>
+            <td th:if="${currentTimeStamp > contest.endTime}"><span class="badge badge-secondary">已结束</span></td>
+
+            <td th:text="${#dates.format(contest.startTime, 'yyyy/MM/dd HH:mm:ss')}"></td>
+            <td th:text="${#dates.format(contest.endTime, 'yyyy/MM/dd HH:mm:ss')}"></td>
+
+            <td th:text="${contest.contestType}"></td>
+            <th:block th:switch="${#strings.length(contest.password) == 0}">
+                <td th:case="${true}"><span class="badge badge-success">公开</span></td>
+                <td th:case="${false}"><span class="badge badge-success">公开</span></td>
+            </th:block>
+        </tr>
+
+        </tbody>
+    </table>
+
+    <br>
+    <h4>最近讨论</h4>
+    <div class="list-group">
+        <div th:each="discuss: ${latestDiscuss}">
+            <div class="list-group-item list-group-item-action flex-column align-items-start ">
+                <div class="media">
+                    <div class="align-self-center text-center mr-4">
+                        <h3 style="width: 50px;" th:text="${discuss.reply}"></h3>
+                    </div>
+                    <div class="media-body">
+                        <div class="d-flex w-100 justify-content-between">
+                            <a th:href="'/discuss-detail?postID='+${discuss.postID}"><h5 class="mb-1"
+                                                                                         th:text="${discuss.title}"></h5>
+                            </a>
+                        </div>
+                        <ul class="mb-1 list-inline">
+
+                            <span th:if="${discuss.first > 0}" class="badge badge-danger"><i class="fa fa-arrow-up"></i></span>
+
+                            <li class="list-inline-item">
+                                <th:block th:switch="${discuss.type}">
+                                    <!--题目讨论-->
+                                    <a th:case="0"
+                                       th:href="'/discuss-list?type=' + ${discuss.type} + '&porcID=' + ${discuss.porcID}">
+                                        <small class="badge badge-primary" th:text="${discuss.theme}"></small>
+                                    </a>
+
+                                    <!--比赛讨论-->
+                                    <a th:case="${1}"
+                                       th:href="'/discuss-list?type='+${discuss.type}+'&porcID='+${discuss.porcID}">
+                                        <small class="badge badge-success" th:text="${discuss.theme}"></small>
+                                    </a>
+
+                                    <!--消息发布-->
+                                    <a th:case="*"
+                                       th:href="'/discuss-list?type=' + ${discuss.type}+ '&theme=' + ${discuss.theme}">
+                                        <small class="badge badge-secondary" th:text="${discuss.theme}"></small>
+                                    </a>
+
+                                </th:block>
+                            </li>
+                            <li class="list-inline-item">
+                                <a th:href="'/user?userID='+${discuss.userID}"><small class="card alert-secondary"
+                                                                                      th:text="${discuss.userName}"></small></a>
+                            </li>
+                            <li class="list-inline-item">
+                                <small class="text-muted"
+                                       th:text="${#dates.format(discuss.postTime, 'yyyy/MM/dd HH:mm:ss')}"></small>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:include="footer :: commonFooter"></div>
+
+</body>
+</html>
+

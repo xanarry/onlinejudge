@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xanarry.onlinejudge.dao.LanguageDao">
+    <!-- 这里namespace必须是UserMapper接口的路径” -->
+
+    <!-- id必须和UserMapper接口中的接口方法名相同 -->
+    <insert id="insertLanguage" useGeneratedKeys="true" keyProperty="language_id"
+            parameterType="com.xanarry.onlinejudge.model.LanguageBean">
+        INSERT INTO t_language(language) values(#{language})
+        <!-- 这里sql结尾不能加分号，否则报“ORA-00911”的错误 -->
+    </insert>
+
+
+    <select id="getLanguageByID" resultType="com.xanarry.onlinejudge.model.LanguageBean"
+            parameterType="java.lang.Integer">
+        SELECT * FROM t_language WHERE language_id = #{language_id};
+    </select>
+
+    <select id="getLanguageID" resultType="java.lang.Short" parameterType="java.lang.String">
+        SELECT language_id from t_language WHERE language=#{language};
+    </select>
+
+    <select id="getLanguageList" resultMap="languageMap" resultType="com.xanarry.onlinejudge.model.LanguageBean">
+        select * from t_language;
+    </select>
+
+    <!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+    <resultMap id="languageMap" type="com.xanarry.onlinejudge.model.LanguageBean">
+        <id property="languageID" column="language_id"/>
+        <result property="language" column="language"/>
+    </resultMap>
+</mapper>

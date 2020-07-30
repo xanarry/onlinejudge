@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xanarry.onlinejudge.dao.ProblemDao">
+    <!--insert-->
+    <insert id="addProblem" keyProperty="problemID" keyColumn="problem_id" useGeneratedKeys="true"
+            parameterType="com.xanarry.onlinejudge.model.ProblemBean">
+        INSERT INTO
+        t_problem
+        (
+        title,
+        `desc`,
+        input_desc,
+        output_desc,
+        input_sample,
+        output_sample,
+        hint,
+        source,
+        background,
+        create_time,
+        static_lang_time_limit,
+        static_lang_mem_limit,
+        dynamic_lang_time_limit,
+        dynamic_lang_mem_limit,
+        accepted,
+        submitted
+        )
+        VALUES
+        (
+        #{title},
+        #{desc},
+        #{inputDesc},
+        #{outputDesc},
+        #{inputSample},
+        #{outputSample},
+        #{hint},
+        #{source},
+        #{background},
+        #{createTime},
+        #{staticLangTimeLimit},
+        #{staticLangMemLimit},
+        #{dynamicLangTimeLimit},
+        #{dynamicLangMemLimit},
+        #{accepted},
+        #{submitted})
+</insert>
+
+
+    <!--delete-->
+    <delete id="deleteProblemByID">
+        DELETE FROM t_problem WHERE problem_id = #{problemID}
+    </delete>
+
+    <!--update-->
+    <update id="updateProblemByID" parameterType="com.xanarry.onlinejudge.model.ProblemBean">
+        UPDATE t_problem SET
+        title = #{title},
+        `desc` = #{desc},
+        input_desc = #{inputDesc},
+        output_desc = #{outputDesc},
+        input_sample = #{inputSample},
+        output_sample = #{outputSample},
+        hint = #{hint},
+        source = #{source},
+        background=#{background},
+        create_time = #{createTime},
+        static_lang_time_limit = #{staticLangTimeLimit},
+        static_lang_mem_limit = #{staticLangMemLimit},
+        dynamic_lang_time_limit = #{dynamicLangTimeLimit},
+        dynamic_lang_mem_limit = #{dynamicLangMemLimit},
+        accepted = #{accepted},
+        submitted = #{submitted}
+        WHERE problem_id = #{problemID}
+    </update>
+
+
+    <update id="updateSubmittedTimes">
+        UPDATE t_problem
+        SET submitted = t_problem.submitted+1
+        WHERE problem_id=#{problemID}
+    </update>
+
+
+    <update id="updateAcceptedTimes">
+        UPDATE t_problem
+        SET accepted = t_problem.accepted+1
+        WHERE problem_id=#{problemID}
+    </update>
+
+
+    <!--select-->
+    <select id="getProblemByID" resultMap="problemMap" resultType="com.xanarry.onlinejudge.model.ProblemBean">
+        SELECT * FROM t_problem WHERE problem_id = #{problemID}
+    </select>
+
+
+    <select id="getProblemsOrderByID" resultMap="problemMap" resultType="com.xanarry.onlinejudge.model.ProblemBean">
+        SELECT * FROM t_problem ORDER BY problem_id ASC limit #{start}, #{count}
+    </select>
+
+
+    <select id="getProblesOrderByIDForLogin" resultMap="problemMap"
+            resultType="com.xanarry.onlinejudge.model.ProblemBean">
+        SELECT * FROM
+        t_problem
+        LEFT JOIN
+        (SELECT DISTINCT problem_id, result FROM t_submit_record WHERE result=#{result} AND user_id=#{userID}) AS t
+        USING (`problem_id`)
+        ORDER BY problem_id
+        <if test="start != null and count != null">
+            LIMIT #{start}, #{count}
+        </if>
+    </select>
+
+
+    <select id="getProblemsOrderByAccepted" resultMap="problemMap"
+            resultType="com.xanarry.onlinejudge.model.ProblemBean">
+        SELECT * FROM t_problem ORDER BY accepted DESC limit #{start}, #{count}
+    </select>
+
+
+    <select id="getProblemsOrderBySubmitted" resultMap="problemMap"
+            resultType="com.xanarry.onlinejudge.model.ProblemBean">
+        SELECT * FROM t_problem ORDER BY submitted DESC limit #{start}, #{count}
+    </select>
+
+
+    <select id="getProblemsOrderByAcceptedRate" resultMap="problemMap"
+            resultType="com.xanarry.onlinejudge.model.ProblemBean">
+        SELECT * FROM t_problem ORDER BY (accepted/submitted) DESC limit #{start}, #{count}
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(*) from t_problem;
+    </select>
+
+
+    <select id="searchProblem" resultMap="problemMap" resultType="com.xanarry.onlinejudge.model.ProblemBean">
+        SELECT * FROM t_problem
+        WHERE problem_id=${problemID-1000} OR title LIKE '%${problemKeyword}%'
+        limit #{start}, #{count}
+    </select>
+
+    <select id="getSearchResultCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM t_problem
+        WHERE problem_id=${problemID-1000} OR title LIKE '%${problemKeyword}%'
+    </select>
+
+    <resultMap id="problemMap" type="com.xanarry.onlinejudge.model.ProblemBean">
+        <id property="problemID" column="problem_id"/>
+        <result property="title" column="title"/>
+        <result property="desc" column="desc"/>
+        <result property="inputDesc" column="input_desc"/>
+        <result property="outputDesc" column="output_desc"/>
+        <result property="inputSample" column="input_sample"/>
+        <result property="outputSample" column="output_sample"/>
+        <result property="hint" column="hint"/>
+        <result property="source" column="source"/>
+        <result property="background" column="background"/>
+        <result property="createTime" column="create_time"/>
+        <result property="staticLangTimeLimit" column="static_lang_time_limit"/>
+        <result property="staticLangMemLimit" column="static_lang_mem_limit"/>
+        <result property="dynamicLangTimeLimit" column="dynamic_lang_time_limit"/>
+        <result property="dynamicLangMemLimit" column="dynamic_lang_mem_limit"/>
+        <result property="accepted" column="accepted"/>
+        <result property="submitted" column="submitted"/>
+        <result property="result" column="result"/>
+    </resultMap>
+</mapper>

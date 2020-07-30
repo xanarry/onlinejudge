@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xanarry.onlinejudge.dao.ContestDao">
+    <insert id="addContest" keyProperty="contestID" keyColumn="contest_id" useGeneratedKeys="true">
+        INSERT INTO t_contest (
+          title,
+          `desc`,
+          start_time,
+          end_time,
+          register_start_time,
+          register_end_time,
+          password,
+          sponsor,
+          contest_type,
+          create_time
+          ) VALUES (
+          #{title},
+          #{desc},
+          #{startTime},
+          #{endTime},
+          #{registerStartTime},
+          #{registerEndTime},
+          #{password},
+          #{sponsor},
+          #{contestType},
+          #{createTime}
+        )
+    </insert>
+
+    <delete id="deleteContest">
+      DELETE FROM t_contest WHERE `contest_id`=#{contestID}
+    </delete>
+
+    <update id="updateContest">
+      UPDATE t_contest
+      SET
+        `title`=#{title},
+        `desc`=#{desc},
+        `start_time`=#{startTime},
+        `end_time`=#{endTime},
+        `register_start_time`=#{registerStartTime},
+        `register_end_time`=#{registerEndTime},
+        `password`=#{password},
+        `sponsor`=#{sponsor},
+        `contest_type`=#{contestType}
+      WHERE `contest_id`=#{contestID}
+    </update>
+
+    <select id="getContestByID" resultMap="contestMap" resultType="com.xanarry.onlinejudge.model.ContestBean">
+      SELECT * FROM t_contest WHERE `contest_id`=#{contestID}
+    </select>
+
+    <select id="getContestByTitle" resultMap="contestMap" resultType="com.xanarry.onlinejudge.model.ContestBean">
+      SELECT * FROM t_contest WHERE `title`=#{title}
+    </select>
+
+    <select id="getContestList" resultMap="contestMap" resultType="com.xanarry.onlinejudge.model.ContestBean">
+      SELECT * FROM t_contest ORDER BY end_time DESC, start_time ASC limit #{start}, #{count}
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(*) from t_contest
+    </select>
+
+    <resultMap id="contestMap" type="com.xanarry.onlinejudge.model.ContestBean">
+        <id property="contestID" column="contest_id"/>
+        <result property="title" column="title"/>
+        <result property="desc" column="desc"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="registerStartTime" column="register_start_time"/>
+        <result property="registerEndTime" column="register_end_time"/>
+        <result property="password" column="password"/>
+        <result property="sponsor" column="sponsor"/>
+        <result property="contestType" column="contest_type"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+</mapper>

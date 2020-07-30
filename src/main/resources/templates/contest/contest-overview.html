@@ -1,0 +1,273 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${contest.title}"></title>
+
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/oj.css">
+
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/js/bootstrap/popper.min.js"></script>
+    <script src="/js/bootstrap/bootstrap.min.js"></script>
+
+    <script>
+
+        var SecondsTohhmmss = function (totalSeconds) {
+            var hours = Math.floor(totalSeconds / 3600);
+            var minutes = Math.floor((totalSeconds - (hours * 3600)) / 60);
+            var seconds = totalSeconds - (hours * 3600) - (minutes * 60);
+
+            // round seconds
+            seconds = Math.round(seconds * 100) / 100;
+
+            var result = (hours < 10 ? "0" + hours : hours);
+            result += "小时" + (minutes < 10 ? "0" + minutes : minutes);
+            result += "分钟" + (seconds < 10 ? "0" + seconds : seconds);
+            result += "秒";
+
+            return hours + "小时" + minutes + "分钟" + seconds + "秒";
+        };
+
+        var s = new Date().getTime();
+
+        $(function () {
+            setInterval("GetTime()", 1000);
+        });
+
+
+        function GetTime() {
+            var min = $("#processBar").attr('aria-valuemin');
+            var max = $("#processBar").attr('aria-valuemax');
+            var cur = new Date().getTime();
+
+            var passed = cur - min;
+            var total = max - min;
+
+            if (passed <= total) {
+                $("#processBar").attr('aria-valuenow', new Date().getTime());
+                $("#processBar").css('width', (passed / total) * 100 + '%');
+
+                var remainSeconds = Math.floor((total - passed) / 1000);
+                $("#remainTime").html("剩余:" + SecondsTohhmmss(remainSeconds));
+                if (remainSeconds < 600) {
+                    $("#processBar").attr('class', 'progress-bar bg-danger');
+                } else {
+                    $("#processBar").attr('class', 'progress-bar bg-success');
+                }
+
+            }
+        }
+    </script>
+</head>
+<body>
+<div th:include="navbar :: commonNavBar"></div>
+<div class="container custom-container">
+    <h2 align="center"><a th:href="'/contest-overview?contestID='+${contest.contestID}" th:text="${contest.title}"></a>
+    </h2>
+
+    <!--在此出获取当前时间-->
+
+    <div class="card" th:with="currentTimeStamp=${new java.util.Date().getTime()}">
+        <div class="card-header"><h5>Overview</h5></div>
+        <th:block th:if="${currentTimeStamp <= contest.endTime and currentTimeStamp >= contest.startTime}">
+            <div class="progress" style="height: 10px;">
+                <div id="processBar" class="progress-bar bg-success" role="progressbar" style="width: 0%;"
+                     th:aria-valuemax="${contest.endTime}" th:aria-valuemin="${contest.startTime}"
+                     th:aria-valuenow="${contest.startTime}"></div>
+            </div>
+            <label class="text-sm-right" id="remainTime" style="font-size: 10px; color: blue">剩余时间:</label>
+        </th:block>
+        <div class="card-body">
+            <table align="center">
+                <tbody>
+                <tr>
+                    <td><b>报名时间:</b>
+                        <span th:text="${#dates.format(contest.registerStartTime, 'yyyy/MM/dd HH:mm:ss')}"></span>
+                    </td>
+                    <td></td>
+                    <td><b>报名截止:</b>
+                        <span th:text="${#dates.format(contest.registerEndTime, 'yyyy/MM/dd HH:mm:ss')}"></span>
+                    </td>
+                    <td></td>
+
+                    <td>
+                        <b>报名状态:</b>
+                        <!--检查当前登录用户是否报名-->
+                        <th:block th:switch="${isRegistered}">
+                            <!--已经报名则显示已经报名-->
+                            <span th:case="${true}" class="badge badge-success">已报名</span>
+                            <!--如果没有报名-->
+                            <th:block th:case="*">
+                                <!--检查比赛是否还在报名日期-->
+                                <th:block
+                                        th:switch="${currentTimeStamp > contest.registerStartTime && currentTimeStamp < contest.registerEndTime}">
+                                    <!--如果还可以报名-->
+                                    <th:block th:case="${true}">
+                                        <!--检查用户是否登录-->
+                                        <th:block th:switch="${session == null or session.userID == null}">
+                                            <!--没有登录则要求先登录-->
+                                            <a th:case="${true}" class="badge badge-warning" href="#"
+                                               data-toggle="modal"
+                                               data-target="#msgModal">我要报名</a>
+                                            <!--已经登录则根据比赛是公开还是私有判断使用什么方式报名-->
+                                            <th:block th:switch="${#strings.length(contest.password) > 0}">
+                                                <a th:case="${true}"
+                                                   class="badge badge-warning" href="#"
+                                                   data-toggle="modal"
+                                                   data-target="#passwordModal">我要报名</a>
+                                                <a th:case="*"
+                                                   th:href="'/contest-register?contestID='+${contest.contestID}"
+                                                   class="badge badge-warning">我要报名</a>
+                                            </th:block>
+                                        </th:block>
+                                    </th:block>
+                                    <!--报名已经截止-->
+                                    <span th:case="*" href="#" class="badge badge-danger">已截止</span>
+                                </th:block>
+                            </th:block>
+                        </th:block>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>开始时间:</b>
+                        <span th:text="${#dates.format(contest.startTime, 'yyyy/MM/dd HH:mm:ss')}"></span>
+                    </td>
+                    <td>&nbsp;&nbsp;</td>
+                    <td><b>结束时间:</b>
+                        <span th:text="${#dates.format(contest.endTime, 'yyyy/MM/dd HH:mm:ss')}"></span>
+                    </td>
+                    <td>&nbsp;&nbsp;</td>
+                    <td>
+                        <b>比赛状态:</b>
+                        <span class="badge badge-info"
+                              th:if="${currentTimeStamp < contest.registerStartTime}">即将到来</span>
+                        <span class="badge badge-success"
+                              th:if="${currentTimeStamp > contest.startTime && currentTimeStamp < contest.endTime}">进行中</span>
+                        <span class="badge badge-primary"
+                              th:if="${currentTimeStamp > contest.registerStartTime && currentTimeStamp < contest.registerEndTime}">报名中</span>
+                        <span class="badge badge-danger" th:if="${currentTimeStamp > contest.endTime}">已结束</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>举办人:</b><span th:text="${contest.sponsor}"></span></td>
+                    <td></td>
+                    <td><b>参赛人数:</b><span th:text="${userCount}"></span></td>
+                    <td></td>
+                    <td>
+                        <b>竞赛规则:</b>
+                        <th:block th:switch="${contest.contestType == 'ACM'}">
+                            <span class="badge badge-success" th:case="${true}">ACM</span>
+                            <span class="badge badge-primary" th:case="*">IO</span>
+                        </th:block>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <br>
+            <p th:text="${contest.desc}"></p>
+            <br>
+            <div class="card">
+                <table class="table table-sm table-striped" style="margin-bottom: 0rem;">
+                    <thead>
+                    <tr>
+                        <th class="text-center">比赛题号</th>
+                        <th class="text-center">题目名称</th>
+                        <th class="text-center">全局ID</th>
+                        <th class="text-center">通过(人)/提交(次)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:each="problem: ${problemList}">
+                        <td class="text-center"><a
+                                th:href="'/contest-detail?contestID='+${contest.contestID}+'&curProblem='+${problem.innerID}"
+                                th:text="${problem.innerID}"></a></td>
+                        <td class="text-center"><a
+                                th:href="'/contest-detail?contestID=' + ${contest.contestID}+'&curProblem='+${problem.innerID}"
+                                th:text="${problem.title}"></a></td>
+                        <th:block th:switch="${session != null and session.userType > 0}">
+                            <td th:case="${true}" class="text-center"><a
+                                    th:href="'/problem?problemID='+${problem.problemID}"
+                                    th:text="${1000 + problem.problemID}"></a></td>
+                            <td th:case="*" class="text-center" th:text="${1000 + problem.problemID}"></td>
+                        </th:block>
+
+                        <td class="text-center" th:text="${problem.accepted}+'/'+${problem.submitted}"></td>
+                        </tr>
+                    </th:block>
+                    </tbody>
+                </table>
+            </div>
+            <br>
+
+            <div class="row">
+                <div class="col-6 offset-3">
+                    <div class="text-center">
+                        <a class="btn btn-primary"
+                           th:href="'/discuss-list?type=1&porcID=' + ${contest.contestID}">讨论</a>
+                        <a class="btn btn-primary"
+                           th:href="'/contest-record-list?contestID=' + ${contest.contestID}">记录</a>
+                        <a class="btn btn-primary" th:href="'/contest-rank?contestID=' + ${contest.contestID}">排名</a>
+                        <th:block th:if="${session.userType != null && session.userType > 0}">
+                            <a class="btn btn-primary" th:href="'/contest-user-list?contestID=' + ${contest.contestID}">用户</a>
+                            <a th:href="'/contest-edit?contestID=' + ${contest.contestID}"><span
+                                    class="btn btn-success">编辑</span></a>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="msgModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">重要提示</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>请登录后再报名</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">知道了</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="passwordModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" th:text="${contest.title}"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/contest-register" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>该比赛已经加密, 请输入比赛密码进入比赛</label>
+                        <input hidden name="contestID" th:value="${contest.contestID}">
+                        <!--                    <input type="password" class="form-control" type="password" name="inputContestPassword" placeholder="Password">-->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">返回</button>
+                    <button class="btn btn-success" type="submit">报名</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div th:include="footer :: commonFooter"></div>
+</body>
+</html>

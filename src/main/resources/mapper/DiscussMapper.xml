@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xanarry.onlinejudge.dao.DiscussDao">
+    <insert id="insertDiscuss" useGeneratedKeys="true" keyProperty="postID" keyColumn="post_id">
+      INSERT INTO t_discuss (
+      `direct_fid`,
+      `root_id`,
+      `type`,
+      `porc_id`,
+      `theme`,
+      `title`,
+      `content`,
+      `post_time`,
+      `user_id`,
+      `user_name`,
+      `reply`,
+      `watch`,
+      `first`) VALUES (
+      #{directFID},
+      #{rootID},
+      #{type},
+      #{porcID},
+      #{theme},
+      #{title},
+      #{content},
+      #{postTime},
+      #{userID},
+      #{userName},
+      #{reply},
+      #{watch},
+      #{first}
+      )
+    </insert>
+
+
+    <delete id="deleteDiscussByPostID">
+      DELETE FROM t_discuss WHERE post_id=#{postID};
+    </delete>
+
+    <delete id="deleteDiscussByUserD">
+        DELETE FROM t_discuss WHERE user_id=#{userID}
+    </delete>
+
+    <delete id="deleteDiscussByRootID">
+        DELETE FROM t_discuss WHERE root_id=#{rootID}
+    </delete>
+
+
+    <update id="setAsRoot" parameterType="com.xanarry.onlinejudge.model.DiscussBean">
+        UPDATE t_discuss SET
+        `root_id`=#{postID},
+        `direct_fid`=#{postID}
+        WHERE post_id=#{postID}
+    </update>
+
+    <update id="addWatch">
+        UPDATE t_discuss SET watch=watch+1 WHERE post_id=#{postID}
+    </update>
+
+    <update id="updateReply" statementType="CALLABLE">
+        CALL updateReplyCount(#{postID})
+    </update>
+
+
+    <update id="setFirst">
+        UPDATE t_discuss SET first=#{val} WHERE post_id=#{postID}
+    </update>
+
+
+    <select id="getDiscussByPostID" resultMap="discussMap" resultType="com.xanarry.onlinejudge.model.DiscussBean">
+        SELECT * FROM t_discuss WHERE post_id=#{postID}
+    </select>
+
+    <select id="getDiscussListByRootID" resultMap="discussMap" resultType="com.xanarry.onlinejudge.model.DiscussBean">
+      SELECT * FROM t_discuss WHERE root_id=#{rootID} AND `post_id` != `root_id` ORDER BY post_time DESC
+    </select>
+
+    <select id="getDiscussTitleList" resultMap="discussMap" resultType="com.xanarry.onlinejudge.model.DiscussBean">
+        SELECT * FROM t_discuss
+        WHERE `post_id`=`root_id` AND `post_id`=`direct_fid`
+        <if test="type != null">
+            AND `type`=#{type}
+        </if>
+        <if test="porcID != null">
+            AND `porc_id`=#{porcID}
+        </if>
+        <if test="theme != null">
+            AND `theme`=#{theme}
+        </if>
+        ORDER BY first DESC, post_time DESC
+        <if test="start!=null and count!=null">
+            limit #{start}, #{count}
+        </if>
+    </select>
+
+    <select id="getCountOfTitleList" resultType="java.lang.Integer">
+        SELECT count(*) FROM t_discuss
+        WHERE `post_id`=`root_id` AND `post_id`=`direct_fid`
+        <if test="type != null">
+            AND `type`=#{type}
+        </if>
+        <if test="porcID != null">
+            AND `porc_id`=#{porcID}
+        </if>
+    </select>
+
+
+    <resultMap id="discussMap" type="com.xanarry.onlinejudge.model.DiscussBean">
+        <id property="postID" column="post_id"/>
+        <result property="directFID" column="direct_fid"/>
+        <result property="rootID" column="root_id"/>
+        <result property="type" column="type"/>
+        <result property="porcID" column="porc_id"/>
+        <result property="theme" column="theme"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="postTime" column="post_time"/>
+        <result property="userID" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="reply" column="reply"/>
+        <result property="watch" column="watch"/>
+        <result property="first" column="first"/>
+    </resultMap>
+</mapper>

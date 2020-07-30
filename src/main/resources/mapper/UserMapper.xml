@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xanarry.onlinejudge.dao.UserDao">
+    <insert id="addNewUser" keyProperty="userID" useGeneratedKeys="true" keyColumn="user_id"
+            parameterType="com.xanarry.onlinejudge.model.UserBean">
+        INSERT INTO t_user
+        (
+        email,
+        user_name,
+        password,
+        register_time,
+        last_login_time,
+        user_type,
+        prefer_language,
+        accepted,
+        submitted,
+        bio,
+        send_code
+        )
+        VALUES
+        (
+        #{email},
+        #{userName},
+        #{password},
+        #{registerTime},
+        #{lastLoginTime},
+        #{userType},
+        #{preferLanguage},
+        #{accepted},
+        #{submitted},
+        #{bio},
+        #{sendCode}
+        )
+    </insert>
+
+
+    <delete id="deleteUserById">
+        DELETE FROM t_user WHERE user_id = #{userID}
+    </delete>
+
+
+    <update id="updateUser">
+        UPDATE t_user SET
+          email           = #{email},
+          user_name       = #{userName},
+          password        = #{password},
+          register_time   = #{registerTime},
+          last_login_time = #{lastLoginTime},
+          user_type       = #{userType},
+          prefer_language = #{preferLanguage},
+          accepted        = #{accepted},
+          submitted       = #{submitted},
+          bio             = #{bio},
+          send_code       = #{sendCode}
+        WHERE user_id = #{userID}
+    </update>
+
+
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(*) from t_user
+    </select>
+
+
+    <select id="getUserByID" resultMap="userMap" resultType="com.xanarry.onlinejudge.model.UserBean">
+        SELECT * FROM t_user WHERE user_id = #{userID}
+    </select>
+
+
+    <select id="getUserByEmail" resultMap="userMap" resultType="com.xanarry.onlinejudge.model.UserBean">
+        SELECT * FROM t_user WHERE email = #{email}
+    </select>
+
+
+    <select id="getUserList" resultMap="userMap" resultType="com.xanarry.onlinejudge.model.UserBean">
+        SELECT * from t_user WHERE user_name LIKE '%${keyword}%'
+        <if test="start != null and count != null">
+            limit #{start}, #{count}
+        </if>
+    </select>
+
+    <select id="getcountOfSearch" resultType="java.lang.Integer">
+        SELECT COUNT(user_id) from t_user WHERE user_name LIKE '%${keyword}%'
+    </select>
+
+    <select id="getUserEmailList" resultType="java.lang.String">
+        SELECT email from t_user
+    </select>
+
+    <select id="checkEmailExist" resultType="java.lang.Boolean">
+        SELECT count(user_id) > 0 AS result FROM t_user WHERE email=#{email}
+    </select>
+
+
+    <select id="checkUserNameExist" resultType="java.lang.Boolean">
+        SELECT count(user_id) > 0 AS result FROM t_user WHERE user_name=#{userName}
+    </select>
+
+
+    <select id="getChart" resultType="com.xanarry.onlinejudge.model.UserBean" resultMap="userMap">
+        SELECT * FROM t_user ORDER BY `accepted` DESC, `accepted`/`submitted` DESC LIMIT #{start}, #{count}
+    </select>
+
+    <resultMap id="userMap" type="com.xanarry.onlinejudge.model.UserBean">
+        <id property="userID" column="user_id"/>
+        <result property="email" column="email"/>
+        <result property="userName" column="user_name"/>
+        <result property="password" column="password"/>
+        <result property="registerTime" column="register_time"/>
+        <result property="lastLoginTime" column="last_login_time"/>
+        <result property="userType" column="user_type"/>
+        <result property="preferLanguage" column="prefer_language"/>
+        <result property="accepted" column="accepted"/>
+        <result property="submitted" column="submitted"/>
+        <result property="bio" column="bio"/>
+        <result property="sendCode" column="send_code"/>
+    </resultMap>
+</mapper>

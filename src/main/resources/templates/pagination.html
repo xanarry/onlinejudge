@@ -1,0 +1,71 @@
+<!--
+Created by IntelliJ IDEA.
+User: xanarry
+Date: 2019/11/13
+Time: 下午3:55
+To change this template use File | Settings | File Templates.
+-->
+<!--pageBean{currentPage=1, countPerPage=20, maxPageCount=1, recordCount=1, baseURL='/employee'}-->
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+<div th:fragment="pageBar">
+    <th:block th:if="${pagination.maxPageCount > 1}"
+              th:with="pageParam='page=',
+              beginVal=${pagination.currentPage - 5 >= 1 ? pagination.currentPage - 5 : 1},
+              endVal=${pagination.currentPage + 5 <= pagination.maxPageCount ? pagination.currentPage + 5 : pagination.maxPageCount}">
+
+        <ul class="pagination justify-content-center">
+            <div th:remove="tag" th:switch="${pagination.currentPage}">
+                <div th:case="1" th:remove="tag">
+                    <li class="page-item disabled"><span class="page-link">首页</span></li>
+                    <li class="page-item disabled"><span class="page-link">上一页</span></li>
+                </div>
+                <div th:case="*" th:remove="tag">
+                    <li class="page-item">
+                        <a class="page-link" th:href="@{${pagination.baseURL} + ${pageParam} + ${1}}">首页</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link"
+                           th:href="@{${pagination.baseURL} + ${pageParam} + ${pagination.currentPage - 1}}">上一页</a>
+                    </li>
+                </div>
+            </div>
+
+
+            <!--循环输出内容-->
+            <div th:each="curPage : ${#numbers.sequence(beginVal, endVal, 1)}" th:remove="tag">
+                <div th:remove="tag" th:switch="${pagination.currentPage}">
+                    <li class="page-item active" th:case="${curPage}">
+                        <span class="page-link"
+                              th:text="${curPage}"></span>
+                    </li>
+                    <li class="page-item" th:case="*">
+                        <a class="page-link"
+                           th:href="@{${pagination.baseURL} + ${pageParam} + ${curPage}}"
+                           th:text="${curPage}"></a></li>
+                </div>
+            </div><!--循环-->
+
+
+            <div th:remove="tag" th:switch="${pagination.currentPage}">
+                <div th:case="${pagination.maxPageCount}" th:remove="tag">
+                    <li class="page-item disabled"><span class="page-link">首页</span></li>
+                    <li class="page-item disabled"><span class="page-link">上一页</span></li>
+                </div>
+                <div th:case="*" th:remove="tag">
+                    <li class="page-item">
+                        <a class="page-link"
+                           th:href="@{${pagination.baseURL} + ${pageParam} + ${pagination.currentPage + 1}}">下一页</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link"
+                           th:href="@{${pagination.baseURL} + ${pageParam} + ${pagination.maxPageCount}}">末页</a>
+                    </li>
+                </div>
+            </div>
+
+        </ul>
+    </th:block>
+</div>

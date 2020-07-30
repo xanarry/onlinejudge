@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xanarry.onlinejudge.dao.ViewSubmitRecordDao">
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(*) from v_submit_record;
+    </select>
+
+
+    <select id="getSubmitRecordByID" resultMap="submitRecordMap"
+            resultType="com.xanarry.onlinejudge.model.ViewSubmitRecordBean">
+        SELECT * FROM v_submit_record WHERE submit_id = #{submitID}
+    </select>
+
+    <select id="getSubmitRecordListByProblemID" resultMap="submitRecordMap"
+            resultType="com.xanarry.onlinejudge.model.ViewSubmitRecordBean">
+        SELECT * FROM v_submit_record
+        WHERE 1=1
+        <if test="contestID != null">
+            AND `contest_id` = #{contestID}
+        </if>
+        <if test="problemID != null">
+            AND `problem_id`=#{problemID}
+        </if>
+        ORDER BY submit_id DESC limit #{start}, #{count}
+    </select>
+
+    <select id="getSubmitRecordListOrderedByDate" resultMap="submitRecordMap"
+            resultType="com.xanarry.onlinejudge.model.ViewSubmitRecordBean">
+        SELECT * FROM v_submit_record
+        WHERE 1=1
+        <if test="contestID != null">
+            AND `contest_id` = #{contestID}
+        </if>
+        ORDER BY submit_id DESC limit #{start}, #{count}
+    </select>
+
+
+    <select id="getSubmitRecordList" resultMap="submitRecordMap"
+            resultType="com.xanarry.onlinejudge.model.ViewSubmitRecordBean">
+        SELECT * FROM v_submit_record
+        WHERE 1=1
+        <if test="contestID != null">
+            AND `contest_id` = #{contestID}
+        </if>
+        <if test="userName != null">
+            AND `user_name`=#{userName}
+        </if>
+        <if test="language != null">
+            AND `language` =#{language}
+        </if>
+        <if test="result != null">
+            AND `result`=#{result}
+        </if>
+        <if test="problemID != null">
+            AND `problem_id`=#{problemID}
+        </if>
+        <if test="start != null and count != null">
+            ORDER BY submit_id DESC limit #{start}, #{count}
+        </if>
+    </select>
+
+    <select id="getCountOnCondition" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM v_submit_record
+        WHERE 1=1
+        <if test="contestID != null">
+            AND `contest_id` = #{contestID}
+        </if>
+        <if test="userName != null">
+            AND `user_name`=#{userName}
+        </if>
+        <if test="language != null">
+            AND `language` =#{language}
+        </if>
+        <if test="result != null">
+            AND `result`=#{result}
+        </if>
+        <if test="problemID != null">
+            AND `problem_id`=#{problemID}
+        </if>
+    </select>
+
+
+    <select id="getUserAcceptedProblems" resultType="java.lang.Integer">
+        SELECT DISTINCT problem_id FROM v_submit_record WHERE user_id=#{userID} AND result ='Accepted' ORDER BY problem_id
+    </select>
+
+    <resultMap id="submitRecordMap" type="com.xanarry.onlinejudge.model.ViewSubmitRecordBean">
+        <result property="submitID" column="submit_id"/>
+        <result property="problemID" column="problem_id"/>
+        <result property="contestTitle" column="contest_title"/>
+        <result property="problemTitle" column="problem_title"/>
+        <result property="userID" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="contestID" column="contest_id"/>
+        <result property="result" column="result"/>
+        <result property="language" column="language"/>
+        <result property="sourceCode" column="source_code"/>
+        <result property="codeLength" column="code_length"/>
+        <result property="timeConsume" column="time_consume"/>
+        <result property="memConsume" column="mem_consume"/>
+        <result property="submitTime" column="submit_time"/>
+        <result property="judgeTime" column="judge_time"/>
+        <result property="compileResult" column="compile_result"/>
+    </resultMap>
+</mapper>

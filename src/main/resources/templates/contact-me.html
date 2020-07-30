@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>联系我</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css">
+
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/js/bootstrap/popper.min.js"></script>
+    <script src="/js/bootstrap/bootstrap.min.js"></script>
+
+</head>
+<body>
+<div th:include="navbar :: commonNavBar"></div>
+<div class="container" style="margin-top:70px">
+    <div class="card">
+        <div class="card-header">联系我</div>
+        <div class="card-body">
+            <h4 class="card-title">邮箱: <a href="mailto:xanarry@163.com">xanarry@163.com</a></h4>
+            <h4 class="card-title">简历: <a href="/files/resume.pdf">点此查看</a></h4>
+        </div>
+    </div>
+</div>
+<div th:include="footer :: commonFooter"></div>
+</body>
+</html>

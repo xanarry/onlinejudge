@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xanarry.onlinejudge.dao.ContestProblemDao">
+    <insert id="addProlem">
+      INSERT INTO t_contest_problem (
+      contest_id, problem_id, title, inner_id, accepted, submitted)
+      VALUES
+      (#{contestID},#{problemID},#{title}, #{innerID}, #{accepted}, #{submitted})
+    </insert>
+
+    <delete id="deleteProblem">
+      DELETE FROM t_contest_problem WHERE contest_id=#{contestID} AND inner_id=#{innerID}
+    </delete>
+
+    <delete id="deleteAllProblem">
+        DELETE FROM t_contest_problem WHERE contest_id=#{contestID}
+    </delete>
+
+    <update id="updateProblem">
+      UPDATE t_contest_problem SET
+      contest_id=#{contestID},
+      problem_id=#{problemID},
+      title=#{title},
+      inner_id=#{innerID},
+      accepted=#{accepted},
+      submitted=#{submitted}
+      WHERE contest_id=#{contestID} AND problem_id=#{problemID}
+    </update>
+
+    <select id="getContestProblem" resultMap="contestProblemMap"
+            resultType="com.xanarry.onlinejudge.model.ContestProblemBean">
+      SELECT * FROM t_contest_problem WHERE contest_id=#{contestID} AND problem_id=#{problemID}
+    </select>
+
+    <select id="getContestProblemList" resultMap="contestProblemMap"
+            resultType="com.xanarry.onlinejudge.model.ContestProblemBean">
+      SELECT * FROM t_contest_problem WHERE contest_id=#{contestID} ORDER BY inner_id ASC
+    </select>
+
+    <resultMap id="contestProblemMap" type="com.xanarry.onlinejudge.model.ContestProblemBean">
+        <id property="contestID" column="contest_id"/>
+        <id property="problemID" column="problem_id"/>
+        <result property="innerID" column="inner_id"/>
+        <result property="title" column="title"/>
+        <result property="accepted" column="accepted"/>
+        <result property="submitted" column="submitted"/>
+    </resultMap>
+</mapper>

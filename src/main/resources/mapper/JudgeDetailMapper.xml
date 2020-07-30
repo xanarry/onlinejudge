@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xanarry.onlinejudge.dao.JudgeDetailDao">
+    <insert id="insertJudgeDetail">
+        INSERT INTO t_judge_detail
+        (
+        `submit_id`,
+        `test_point_id`,
+        `time_consume`,
+        `mem_consume`,
+        `return_val`,
+        `result`
+        )
+        VALUES
+        (
+        #{submitID},
+        #{testPointID},
+        #{timeConsume},
+        #{memConsume},
+        #{returnVal},
+        #{result}
+        )
+
+
+    </insert>
+
+    <delete id="deleteJudgeDetail">
+      DELETE * FROM t_judge_detail WHERE submit_id = #{submitID}
+    </delete>
+
+    <update id="updateJudegeDetail">
+      UPDATE t_judge_detail
+      SET
+      `submit_id`     = #{newsubmitID}
+      `test_point_id` = #{newtestPointID}
+      `time_consume`  = #{newtimeConsume}
+      `mem_consume`   = #{newmemConsume}
+      `return_val`    = #{newreturnVal}
+      `result`        = #{newresult}
+      WHERE submit_id = #{newJudgeDetailsubmitID}
+    </update>
+
+    <select id="getJudegeDetailBySubmitID" resultMap="judgeDetailMap"
+            resultType="com.xanarry.onlinejudge.model.JudgeDetailBean">
+      SELECT * FROM t_judge_detail WHERE submit_id = #{submitID}
+    </select>
+
+
+    <select id="getJudgeDetailByTestPointID" resultMap="judgeDetailMap"
+            resultType="com.xanarry.onlinejudge.model.JudgeDetailBean">
+      SELECT * FROM t_judge_detail WHERE submit_id = #{submitID} and test_point_id = #{testPointID}
+    </select>
+
+
+    <resultMap id="judgeDetailMap" type="com.xanarry.onlinejudge.model.JudgeDetailBean">
+        <id property="submitID" column="submit_id"/>
+        <id property="testPointID" column="test_point_id"/>
+        <result property="timeConsume" column="time_consume"/>
+        <result property="memConsume" column="mem_consume"/>
+        <result property="returnVal" column="return_val"/>
+        <result property="result" column="result"/>
+    </resultMap>
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xanarry.onlinejudge.dao.CompileInfoDao">
+    <insert id="insertCompileResult" keyProperty="submitID">
+        INSERT INTO t_compile_info
+        (`submit_id`,`compile_result`)
+        VALUES
+        (#{submitID}, #{compileResult})
+    </insert>
+
+    <delete id="deleteCompileResult">
+        DELETE * FROM t_compile_info WHERE submit_id = #{submitID}
+    </delete>
+
+    <select id="getCompileResult" resultMap="compileResultMap"
+            resultType="com.xanarry.onlinejudge.model.CompileInfoBean">
+        SELECT * FROM t_compile_info WHERE submit_id = #{submitID}
+    </select>
+
+    <resultMap id="compileResultMap" type="com.xanarry.onlinejudge.model.CompileInfoBean">
+        <id property="submitID" column="submit_id"/>
+        <result property="compileResult" column="compile_result"/>
+    </resultMap>
+</mapper>

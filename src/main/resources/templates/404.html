@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>404</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/oj.css">
+
+    <style>
+        .error-template {
+            padding: 40px 15px;
+            text-align: center;
+        }
+
+        .error-actions {
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        .error-actions .btn {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container custom-container">
+    <div class="text-center">
+        <div class="error-template">
+            <h1>Oops!</h1>
+            <h2>页面不存在</h2>
+            <div class="error-details">
+                非常抱歉, 无法提供您请求的页面<br>
+            </div>
+            <div class="error-actions">
+                <a th:href="/index" class="btn btn-primary"><i class="icon-home icon-white"></i> 点此回首页 </a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

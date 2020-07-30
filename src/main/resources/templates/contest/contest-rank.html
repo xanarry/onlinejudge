@@ -1,0 +1,110 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${contest.title}"></title>
+
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/oj.css">
+
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/js/bootstrap/popper.min.js"></script>
+    <script src="/js/bootstrap/bootstrap.min.js"></script>
+</head>
+
+<body>
+<div th:include="navbar :: commonNavBar"></div>
+<div class="container custom-container">
+    <h2 align="center"><a th:href="'/contest-overview?contestID='+${contest.contestID}" th:text="${contest.title}"></a>
+    </h2>
+
+    <div class="card">
+        <div class="card-header"><h5>比赛排名</h5></div>
+        <div class="card-body">
+            <div class="card">
+                <table class="table table-striped text-center" style="margin-bottom: 0rem;">
+                    <thead>
+                    <tr>
+                        <th>排名</th>
+                        <th>用户名</th>
+                        <th>AC题数</th>
+                        <th>罚时</th>
+                        <th:block th:each="problem: ${problemOverview}">
+                            <th>
+                                <a th:href="'/contest-detail?contestID='+${contest.contestID} + '&problemID=' + ${problem.innerID}"
+                                   th:text="${problem.innerID}+'(' +${problem.accepted}+'/'+${problem.submitted}+')'"></a>
+                            </th>
+                        </th:block>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:each="rankBean: ${rankList}">
+                        <tr>
+                            <!--输出排名,-->
+                            <td style="vertical-align: middle" th:text="${rankBean.rank}"></td>
+                            <td style="vertical-align: middle"><a th:href="'/user?userID='+${rankBean.userID}"
+                                                                  class="myuser-base myuser-violet"
+                                                                  th:text="${rankBean.userName}"></a></td>
+                            <td style="vertical-align: middle" th:text="${rankBean.AC_Count}"></td>
+                            <td style="vertical-align: middle" th:text="${rankBean.totalTimeConsume}"></td>
+                            <th:block th:each="problem: ${problemOverview}">
+                                <!--检查当前题目有当前用户的提交信息,-->
+                                <th:block th:switch="${rankBean.problems.get(problem.problemID) != null}">
+                                    <!--如果当前题目有当前用户的提交信息,那么显示数据-->
+                                    <th:block th:case="${true}">
+                                        <!--检查该题目是不是已经被该用户AC-->
+                                        <th:block th:switch="${rankBean.problems.get(problem.problemID).accepted}">
+                                            <!--题目被AC-->
+                                            <th:block th:case="${true}">
+                                                <!--检查该题目是不是该用户最先AC-->
+                                                <th:block
+                                                        th:switch="${rankBean.problems.get(problem.problemID).firstAccepted}">
+                                                    <!--第一人AC-->
+                                                    <td style="background-color: #a6f3a6" th:case="${true}">
+                                                        +<span
+                                                            th:text="${rankBean.problems.get(problem.problemID).tryTimes}"></span>
+                                                        <br><span
+                                                            th:text="${rankBean.problems.get(problem.problemID).timeConsume}"></span>
+                                                    </td>
+                                                    <!--仅仅是AC-->
+                                                    <td style="background-color: #dbffdb;" th:case="*">
+                                                        +<span
+                                                            th:text="${rankBean.problems.get(problem.problemID).tryTimes}"></span>
+                                                        <br><span
+                                                            th:text="${rankBean.problems.get(problem.problemID).timeConsume}"></span>
+                                                    </td>
+                                                </th:block>
+                                            </th:block>
+                                            <!--题目没有被AC-->
+                                            <th:block th:case="*">
+                                                <!--检查尝试次数-->
+                                                <th:block
+                                                        th:switch="${rankBean.problems.get(problem.problemID).tryTimes != 0}">
+                                                    <!--尝试多次没有解决-->
+                                                    <td class="alert-danger" style="vertical-align: middle"
+                                                        th:case="${true}">-<span
+                                                            th:text="${rankBean.problems.get(problem.problemID).tryTimes}"></span>
+                                                    </td>
+                                                    <!--没有尝试-->
+                                                    <td style="vertical-align: middle" th:case="*"></td>
+                                                </th:block>
+                                            </th:block>
+                                        </th:block>
+                                    </th:block>
+                                    <th:block th:case="*">
+                                        <td style="vertical-align: middle"></td> <!--显示空内容-->
+                                    </th:block>
+                                </th:block>
+
+                            </th:block>
+                        </tr>
+                    </th:block>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div th:include="footer :: commonFooter"></div>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xanarry.onlinejudge.dao.SubmitRecordDao">
+    <resultMap id="submitRecordMap" type="com.xanarry.onlinejudge.model.SubmitRecordBean">
+        <id column="submit_id" jdbcType="INTEGER" property="submitID"/>
+        <result column="user_id" jdbcType="INTEGER" property="userID"/>
+        <result column="problem_id" jdbcType="INTEGER" property="problemID"/>
+        <result column="contest_id" jdbcType="INTEGER" property="contestID"/>
+        <result column="result" jdbcType="VARCHAR" property="result"/>
+        <result column="language" jdbcType="VARCHAR" property="language"/>
+        <result column="code_length" jdbcType="INTEGER" property="codeLength"/>
+        <result column="time_consume" jdbcType="INTEGER" property="timeConsume"/>
+        <result column="mem_consume" jdbcType="INTEGER" property="memConsume"/>
+        <result column="submit_time" jdbcType="BIGINT" property="submitTime"/>
+        <result column="judge_time" jdbcType="BIGINT" property="judgeTime"/>
+        <result column="source_code" jdbcType="LONGVARCHAR" property="sourceCode"/>
+    </resultMap>
+
+    <insert id="addSubmitRecord" keyColumn="submit_id" keyProperty="submitID"
+            parameterType="com.xanarry.onlinejudge.model.SubmitRecordBean"
+            useGeneratedKeys="true">
+    insert into t_submit_record (user_id, problem_id, contest_id,
+      `result`, `language`, code_length,
+      time_consume, mem_consume, submit_time,
+      source_code)
+    values (#{userID,jdbcType=INTEGER}, #{problemID,jdbcType=INTEGER}, #{contestID,jdbcType=INTEGER},
+      #{result,jdbcType=VARCHAR}, #{language,jdbcType=VARCHAR}, #{codeLength,jdbcType=INTEGER},
+      #{timeConsume,jdbcType=INTEGER}, #{memConsume,jdbcType=INTEGER}, #{submitTime,jdbcType=BIGINT},
+      #{sourceCode,jdbcType=LONGVARCHAR})
+  </insert>
+
+
+    <delete id="deleteSubmitRecord">
+      DELETE  from t_submit_record WHERE submit_id = #{submitID}
+    </delete>
+
+    <delete id="deleteSubmitRecordByUserID">
+        DELETE FROM t_submit_record WHERE user_id = #{userID}
+    </delete>
+
+
+    <update id="updateSubmitRecord">
+        UPDATE t_submit_record SET
+            `user_id` = #{userID},
+            `problem_id` = #{problemID},
+            `contest_id` = #{contestID},
+            `result` = #{result},
+            `language` = #{language},
+            `source_code` = #{sourceCode},
+            `code_length` = #{codeLength},
+            `time_consume` = #{timeConsume},
+            `mem_consume` = #{memConsume},
+            `submit_time` = #{submitTime},
+            `judge_time` = #{judgeTime}
+        WHERE `submit_id` = #{submitID}
+    </update>
+    <select id="getSubmitRecordByID" resultMap="submitRecordMap"
+            resultType="com.xanarry.onlinejudge.model.SubmitRecordBean">
+      SELECT * FROM t_submit_record WHERE submit_id = #{submitID}
+    </select>
+
+    <select id="getSubmitRecordListByProblemID" resultMap="submitRecordMap"
+            resultType="com.xanarry.onlinejudge.model.SubmitRecordBean">
+      SELECT * FROM t_submit_record WHERE problem_id = #{problemID}
+    </select>
+
+    <select id="getSubmitRecordListByUserID" resultMap="submitRecordMap"
+            resultType="com.xanarry.onlinejudge.model.SubmitRecordBean">
+      SELECT * FROM t_submit_record WHERE user_id = #{userID} ORDER BY submit_id DESC limit #{start}, #{count}
+    </select>
+
+    <select id="getSubmitRecordListByProblemUser" resultMap="submitRecordMap"
+            resultType="com.xanarry.onlinejudge.model.SubmitRecordBean">
+      SELECT * FROM t_submit_record WHERE user_id = #{userID} AND problem_id = #{problemID} ORDER BY submit_id DESC limit #{start}, #{count}
+    </select>
+
+    <select id="getSubmitRecordListOrderedByDate" resultMap="submitRecordMap"
+            resultType="com.xanarry.onlinejudge.model.SubmitRecordBean">
+      SELECT * FROM t_submit_record ORDER BY submit_id DESC limit #{start}, #{count}
+    </select>
+
+    <select id="getSubmitRecordList" resultMap="submitRecordMap"
+            resultType="com.xanarry.onlinejudge.model.SubmitRecordBean">
+        SELECT * FROM t_submit_record
+        WHERE 1=1
+        <if test="contestID != null">
+            AND `contest_id`=#{contestID}
+        </if>
+        <if test="userID != null">
+            AND `user_id`=#{userID}
+        </if>
+        <if test="language != null">
+            AND `language`=#{language}
+        </if>
+        <if test="result != null">
+            AND `result`=#{result}
+        </if>
+        <if test="problemID != null">
+            AND `problem_id`=#{problemID}
+        </if>
+        ORDER BY submit_time DESC limit #{start}, #{count}
+    </select>
+
+
+</mapper>

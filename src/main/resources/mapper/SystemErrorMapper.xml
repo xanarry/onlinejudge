@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xanarry.onlinejudge.dao.SystemErrorDao">
+    <!--insert-->
+    <insert id="addErrorMessage" parameterType="com.xanarry.onlinejudge.model.SystemErrorBean">
+        INSERT INTO t_system_error (submit_id, error_message) VALUES (#{submitID}, #{errorMessage})
+    </insert>
+
+
+    <!--delete-->
+    <delete id="deleteErrorMessage">
+        DELETE FROM t_system_error WHERE submit_id = #{submitID}
+    </delete>
+
+
+    <!--select-->
+    <select id="getSystemErrorMessage" resultMap="systemErrorMap"
+            resultType="com.xanarry.onlinejudge.model.SystemErrorBean">
+        SELECT * FROM t_system_error WHERE submit_id = #{submitID}
+    </select>
+
+
+    <resultMap id="systemErrorMap" type="com.xanarry.onlinejudge.model.SystemErrorBean">
+        <id property="submitID" column="submit_id"/>
+        <result property="errorMessage" column="error_message"/>
+    </resultMap>
+</mapper>

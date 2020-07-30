@@ -1,0 +1,202 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="commonNavBar">
+    <script>
+        function getValidateCode() {
+            $("#validateCode").attr("src", "/ajaxGetValidateCode?r=" + Math.random());
+        }
+
+        function login() {
+
+            var inputEmail = $("#inputLoginEmail").val();
+            var inputPassword = $("#inputLoginPassword").val();
+            var inputRememberMe = $('#rememberMe:checked').val();
+            var inputValidateCode = $("#inputLoginValidateCode").val();
+            console.log("click login: " + inputRememberMe);
+            $.ajax({
+                type: 'POST',
+                url: '/login',
+                data: {
+                    inputEmail: inputEmail,
+                    inputPassword: inputPassword,
+                    inputRememberMe: inputRememberMe,
+                    inputValidateCode: inputValidateCode
+                },
+                dataType: "json",
+                success: function (data) {
+                    console.log(JSON.stringify(data));
+                    //"{userExist : %s, correctPassword : %s, correctValidateCode :%s}"
+                    if (data.userExist == false) {
+                        $("#loginEmailTip").show();
+                    } else {
+                        $("#loginEmailTip").hide();
+                    }
+
+                    if (data.correctPassword == false) {
+                        $("#loginPasswordTip").show();
+                    } else {
+                        $("#loginPasswordTip").hide();
+                    }
+
+                    if (data.correctValidateCode == false) {
+                        $("#loginValidateCodeTip").show();
+                    } else {
+                        $("#loginValidateCodeTip").hide();
+                    }
+
+                    if (data.userExist == true && data.correctPassword == true && data.correctValidateCode == true) {
+                        window.location.href = "/";
+                    }
+
+                },
+                error: function (e) {
+                    alert("ajax error occured" + JSON.stringify(e));
+                }
+            })
+        }
+
+        $(function () {
+            $('#loginModal').on('show.bs.modal', function () {
+                getValidateCode();
+                $("#validateCodeTip").hide();
+                $("#passwordTip").hide();
+                $("#emailTip").hide();
+            })
+
+        })
+    </script>
+
+    <nav class="navbar navbar-expand-sm navbar-light bg-light fixed-top">
+        <div class="container">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/">首页</a>
+                    </li>
+                    <li class="nav-item"><span class="nav-link"></span></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/problem-list">题库</a>
+                    </li>
+                    <li class="nav-item"><span class="nav-link"></span></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contest-list">比赛</a>
+                    </li>
+                    <li class="nav-item"><span class="nav-link"></span></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/discuss-list">讨论</a>
+                    </li>
+                    <li class="nav-item"><span class="nav-link"></span></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/record-list">提交记录</a>
+                    </li>
+
+                    <li class="nav-item"><span class="nav-link"></span></li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user-chart">排行榜</a>
+                    </li>
+
+                    <li class="nav-item"><span class="nav-link"></span></li>
+                    <li class="nav-item"><span class="nav-link"></span></li>
+                    <form class="form-inline my-2 my-lg-0" action="/problem-search" method="get">
+                        <input class="form-control mr-sm-2" type="search" name="inputProblemKeyword"
+                               placeholder="模糊搜索题目编号,标题" aria-label="Search">
+                    </form>
+                </ul>
+
+
+                <th:block th:switch="${session.userID != null}">
+                    <!--用户已经登录-->
+                    <ul th:case="${true}" class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="'/user?userID=' + ${session.userID}">
+                                <span class=""><span th:text="${#strings.escapeXml(session.userName)}"></span></span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item"><span class="nav-link"></span></li>
+                        <div th:if="${session.userType != null and session.userType > 0}">
+                            <li class="nav-item"><a href="/admin" class="nav-link"><span class=""></span>管理</a></li>
+                        </div>
+
+                        <li class="nav-item"><span class="nav-link"></span></li>
+                        <li class="nav-item"><a href="/logout" class="nav-link"><span class=""></span>退出</a></li>
+                    </ul>
+
+                    <!--游客-->
+                    <ul th:case="${false}" class="navbar-nav">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#loginModal"><span
+                                    class=""></span>登录</a>
+                        </li>
+                        <li class="nav-item"><span class="nav-link"></span></li>
+                        <li class="nav-item"><a href="/register" class="nav-link"><span class=""></span>注册</a></li>
+                    </ul>
+                </th:block>
+            </div>
+        </div>
+    </nav>
+
+
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">登录</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                </div>
+
+
+                <form class="modal-body" method="post" action="/login">
+                    <div class="input-group">
+                        <span class="input-group-addon">邮&nbsp;&nbsp;&nbsp;&nbsp;箱</span>
+                        <input type="text" class="form-control" id="inputLoginEmail" name="inputLoginEmail"
+                               placeholder="邮箱地址">
+                    </div>
+                    <label class="offset-8" id="loginEmailTip" style="display: none; color: red">邮箱不存在</label>
+                    <br>
+
+
+                    <div class="input-group">
+                        <span class="input-group-addon">密&nbsp;&nbsp;&nbsp;&nbsp;码</span>
+                        <input type="password" class="form-control" id="inputLoginPassword" name="inputLoginPassword"
+                               placeholder="登录密码">
+                        <br>
+                    </div>
+                    <label class="offset-8" id="loginPasswordTip" style="display: none; color: red">密码错误</label>
+                    <br>
+
+                    <div class="input-group">
+                        <span class="input-group-addon">验证码</span>
+                        <input type="text" class="form-control" id="inputLoginValidateCode"
+                               name="inputLoginValidateCode" placeholder="输入验证码中的结果">
+                    </div>
+                    <label class="offset-8" id="loginValidateCodeTip" style="display: none; color: red">验证码错误</label>
+                    <br>
+
+                    <div class="input-group">
+                        <img id="validateCode" src="" alt="" height="38px">
+                        <span>&nbsp;</span>
+                        <a class="btn btn-light" onclick="getValidateCode()">点此换一张图片</a>
+                    </div>
+
+                    <br>
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="checkbox" value="1" id="rememberMe" name="rememberMe" class="form-check-input">记住我一周
+                        </label>
+                    </div>
+
+                    <div class="text-center">
+                        <a href="#" class="btn btn-primary" onclick="login()">点此登录</a>
+                        <br><br>
+                        <a href="/retrieve-password">忘记密码?</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+

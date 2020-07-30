@@ -1,0 +1,159 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>讨论</title>
+
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/font-awesome.css">
+    <link rel="stylesheet" href="/css/oj.css">
+
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/js/bootstrap/popper.min.js"></script>
+    <script src="/js/bootstrap/bootstrap.min.js"></script>
+
+    <script>
+        function checkDiscussContent() {
+            var inputTitle = $("#inputTitle").val();
+            var inputContent = $("#inputContent").val();
+            if (inputTitle == null || inputTitle.length == 0 || inputContent == null || inputContent.length == 0) {
+                alert("不允许有空");
+                return false;
+            }
+            return true;
+        }
+    </script>
+</head>
+
+<body>
+<div th:include="navbar :: commonNavBar"></div>
+<div class="container custom-container">
+    <th:block th:if="${discussList == null || #arrays.length(discussList) == 0}">
+        <th:block th:switch="param.type">
+            <h3 th:case="${0}">该题目下还没有讨论, 点下面创建新的讨论!</h3>
+            <h3 th:case="${1}">该比赛下还没有讨论, 点下面创建新的讨论!</h3>
+            <h3 th:case="*">目前没有讨论!</h3>
+        </th:block>
+    </th:block>
+
+    <ul class="list-inline">
+        <li class="list-inline-item"><h4 th:text="${tableTitle}"></h4></li>
+        <li class="list-inline-item" th:if="${session.userID != null}">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#discussModal">创建新讨论</button>
+        </li>
+    </ul>
+
+    <div class="list-group">
+        <th:block th:each="discuss: ${discussList}">
+            <div class="list-group-item list-group-item-action flex-column align-items-start ">
+                <div class="media">
+                    <div class="align-self-center text-center mr-4">
+                        <h3 style="width: 50px;" th:text="${discuss.reply}"></h3>
+                    </div>
+                    <div class="media-body">
+                        <div class="d-flex w-100 justify-content-between">
+                            <a th:href="'discuss-detail?postID='+${discuss.postID}"><h5 class="mb-1"
+                                                                                        th:text="${discuss.title}"></h5>
+                            </a>
+                        </div>
+                        <ul class="mb-1 list-inline">
+                            <span class="badge badge-danger" th:if="${discuss.first > 0}"><i class="fa fa-arrow-up"></i></span>
+                            <li class="list-inline-item">
+                                <th:block th:switch="${discuss.type}">
+                                    <!--题目讨论-->
+                                    <a th:case="${0}"
+                                       href="/discuss-list?type=${discuss.type}&porcID=${discuss.porcID}">
+                                        <small class="badge badge-primary" th:text="${discuss.theme}"></small>
+                                    </a>
+                                    <!--比赛讨论-->
+                                    <a th:case="${1}"
+                                       href="/discuss-list?type=${discuss.type}&porcID=${discuss.porcID}">
+                                        <small class="badge badge-success" th:text="${discuss.theme}"></small>
+                                    </a>
+                                    <!--消息发布-->
+                                    <a th:case="*" href="/discuss-list?type=${discuss.type}&theme=${discuss.theme}">
+                                        <small class="badge badge-secondary" th:text="${discuss.theme}"></small>
+                                    </a>
+                                </th:block>
+                            </li>
+                            <li class="list-inline-item">
+                                <a th:href="'/user?userID='+${discuss.userID}">
+                                    <small class="card alert-secondary" th:text="${discuss.userName}"></small>
+                                </a>
+                            </li>
+                            <li class="list-inline-item">
+                                <small class="text-muted"
+                                       th:text="${#dates.format(discuss.postTime, 'yyyy/MM/dd HH:mm:ss')}">
+                                </small>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="align-self-center ml-4" th:if="${session.userType != null and session.userType > 0}">
+                        <th:block th:switch="${discuss.first == 0}">
+                            <a class="btn-sm btn-primary"
+                               th:case="${true}"
+                               th:href="'/discuss-set-first?postID='+${discuss.postID}+'&val=1'">置顶</a>
+                            <a class="btn-sm btn-primary" th:case="*"
+                               th:href="'/discuss-set-first?postID='+${discuss.postID}+'&val=0'">取消置顶</a>
+                        </th:block>
+                        <a class="btn-sm btn-danger" th:href="'/discuss-delete?postID='+${discuss.postID}">删除</a>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+        <br>
+        <div th:if="${pagination != null}" th:include="pagination :: pageBar"></div>
+    </div>
+
+    <div class="modal fade" id="discussModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">发布新的讨论</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/post-original-discuss" method="post" onsubmit="return checkDiscussContent()">
+                        <th:block th:switch="${param.type != null}">
+                            <input hidden id="inputType" name="inputType" th:case="${true}" th:value="${param.type}">
+                            <input hidden id="inputType" name="inputType" th:case="*" value="2">
+                        </th:block>
+                        <input id="inputPorcID" name="inputPorcID" th:value="${param.porcID}" hidden>
+                        <div class="form-group">
+                            <label>标题</label>
+                            <input type="text" class="form-control" name="inputTitle" id="inputTitle" placeholder="标题">
+                        </div>
+                        <div class="form-group">
+                            <label>内容</label>
+                            <textarea class="form-control" id="inputContent" name="inputContent" rows="5"></textarea>
+                        </div>
+
+                        <div class="form-row align-items-center">
+                            <th:block th:if="${(param.type != null and param.type == 2) or param.type == null}">
+                                <div class="col-sm-5">
+                                    <div class="input-group mb-2 mb-sm-0">
+                                        <div class="input-group-addon">theme:</div>
+                                        <select class="form-control" name="inputTheme">
+                                            <option th:text="建议" value="建议"></option>
+                                            <option th:text="题解" value="题解"></option>
+                                            <option selected th:text="问答" value="问答"></option>
+                                            <option th:text="分享" value="分享"></option>
+                                            <option th:text="其他" value="其他"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </th:block>
+                            <div class="col-auto">
+                                <input type="submit" value="发布" class="btn btn-success">
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:include="footer :: commonFooter"></div>
+</body>
+</html>

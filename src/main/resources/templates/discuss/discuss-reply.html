@@ -1,0 +1,134 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>discuss</title>
+
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/oj.css">
+
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/js/bootstrap/popper.min.js"></script>
+    <script src="/js/bootstrap/bootstrap.min.js"></script>
+
+    <script src="/plugin/ckeditor/ckeditor.js"></script>
+
+    <script>
+        function problemCheck() {
+            $('textarea.ckeditor').each(function () {
+                var $textarea = $(this);
+                $textarea.val(CKEDITOR.instances[$textarea.attr('id')].getData());
+            });
+        }
+    </script>
+</head>
+
+
+<body>
+<div th:include="navbar :: commonNavBar"></div>
+<div class="container custom-container">
+    <div class="card">
+        <div class="card-header"><h5 th:text="${discuss.title}"></h5></div>
+        <div class="card-body">
+            <p class="card-text" th:text="${discuss.content}"></p>
+            <hr style="margin-top: 1.5rem; margin-bottom: 0;">
+            <ul class="mb-1 list-inline">
+                <li class="list-inline-item">
+                    <th:block th:switch="discuss.type">
+                        <a th:case="${0}" th:href="'/problem?problemID='+${discuss.porcID}">
+                            <small class="badge badge-secondary" th:text="${discuss.theme}"></small>
+                        </a>
+                        <a th:case="${1}" th:href="'/contest-overview?contestID='+${discuss.porcID}">
+                            <small class="badge badge-secondary" th:text="${discuss.theme}"></small>
+                        </a>
+                        <a th:case="*" th:href="'/discuss?theme='+${discuss.theme}">
+                            <small class="badge badge-secondary" th:text="${discuss.theme}"></small>
+                        </a>
+                    </th:block>
+
+                </li>
+                <li class="list-inline-item">
+                    <a th:href="'/user?userID='+${discuss.userID}">
+                        <small class="card alert-secondary" th:text="${discuss.userName}"></small>
+                    </a>
+                </li>
+                <li class="list-inline-item">
+                    <small class="text-muted" th:text="${discuss.watch} + '次查看'"></small>
+                </li>
+                <li class="list-inline-item">
+                    <small class="text-muted"
+                           th:text="${#dates.format(discuss.postTime, 'yyyy/MM/dd HH:mm:ss')}"></small>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <br>
+    <a class="btn btn-primary" href="/discuss-list">返回列表</a>
+    <button class="btn btn-success"
+            data-toggle="collapse" href="#collapseReply"
+            th:if="${session != null and session.userType != null}">发表回复
+    </button>
+    <br>
+    <div class="collapse" id="collapseReply">
+        <div class="card">
+            <div class="card-body">
+                <form class="form-group" action="/post-discuss" method="post">
+                    <input hidden name="inputRootID" th:value="${discuss.postID}">
+                    <input hidden name="inputDirectFID" th:value="${discuss.postID}">
+                    <input hidden name="inputPorcID" th:value="${discuss.porcID}">
+                    <input hidden name="inputType" th:value="${discuss.type}">
+                    <textarea name="inputContent" id="inputComment" class="form-control" placeholder="在此输入您的回复内容"
+                              style="height:150px; font-family: Consolas"></textarea>
+                    <script>
+                        CKEDITOR.replace('inputComment'); // 这里的 'editor1' 等于 textarea 的 id 'editor1'
+                    </script>
+                    <br><input class="btn btn-success" type="submit" value="发布回复">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <div class="list-group">
+        <div class="list-group-item list-group-item-action flex-column align-items-start ">
+            <div class="media">
+                <div class="align-self-center text-center mr-4">
+                    <h5>回复列表(<span th:text="${discuss.reply}"></span>)</h5>
+                </div>
+            </div>
+        </div>
+
+        <th:block th:each="reply: ${replyList}">
+            <div class="list-group-item list-group-item-action flex-column align-items-start ">
+                <div class="media">
+                    <div class="media-body">
+                        <div class="d-flex w-100 justify-content-between">
+                            <p class="card-text" style="color: black" th:text="${reply.content}"></p>
+                        </div>
+                        <ul class="mb-1 list-inline">
+                            <li class="list-inline-item">
+                                <a th:href="'/user?userID=' + ${reply.userID}">
+                                    <small class="card alert-secondary" th:text="${reply.userName}"></small>
+                                </a>
+                            </li>
+                            <li class="list-inline-item">
+                                <small class="text-muted"
+                                       th:text="${'在' + #dates.format(discuss.postTime, 'yyyy/MM/dd HH:mm:ss') + '回复'}">
+                                </small>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="align-self-md-start ml-4"
+                         th:if="${session != null and session.userType > 0}">
+                        <a class="btn-sm btn-primary" th:href="'/discuss-delete?postID=' + ${reply.postID}">回复</a>
+                        <a class="btn-sm btn-danger" th:href="'/discuss-delete?postID=' + ${reply.postID}">删除</a>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+    </div>
+</div>
+<div th:include="footer :: commonFooter"></div>
+</body>
+</html>
+</html>

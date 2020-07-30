@@ -1,0 +1,96 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>用户列表</title>
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/oj.css">
+
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/js/bootstrap/popper.min.js"></script>
+    <script src="/js/bootstrap/bootstrap.min.js"></script>
+
+    <script>
+        function confirmDeleteUser(userID, userName) {
+            $("#warningMessage").html("删除用户[<b>" + userName + "</b>]的所有信息, 是否继续?");
+            $("#deleteUser").attr('href', '/user-delete?userID=' + userID);
+            $("#deleteModal").modal('show');
+        }
+    </script>
+</head>
+<body>
+<div th:include="navbar :: commonNavBar"></div>
+<div class="container custom-container">
+
+    <div class="row">
+        <h4 class="col-2 align-self-end" th:text="${tableTitle}"></h4>
+        <div class="col-3 offset-7">
+            <form style="margin-bottom: .5rem" action="/user-list" method="get">
+                <input type="text" name="keyword" class="form-control" placeholder="搜索用户">
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <table class="table table-striped text-center" style="margin-bottom: 0rem;">
+            <thead>
+            <tr>
+                <th>用户名</th>
+                <th>用户类型</th>
+                <th>个性签名</th>
+                <th>注册日期</th>
+                <th>语言偏好</th>
+                <th>通过(题)/提交(次)</th>
+                <th th:if="${session.userType != null and session.userType == 2}">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="user, ${userList}">
+                <tr>
+                    <td><a th:href="'/user?userID='+${user.userID}" th:text="${user.userName}"></a></td>
+                    <td>
+                        <th:block th:switch="${user.userType}">
+                            <span th:case="${2}">管理员</span>
+                            <span th:case="${1}">高级用户</span>
+                            <span th:case="*">普通用户</span>
+                        </th:block>
+                    </td>
+                    <td th:text="${user.bio}"></td>
+                    <td th:text="${#dates.format(user.registerTime, 'yyyy/MM/dd')}"></td>
+                    <td th:text="${user.preferLanguage}"></td>
+                    <td th:text="${user.accepted} +'/'+${user.submitted}"></td>
+                    <td th:if="${session.userType != null and session.userType == 2}">
+                        <a class="badge badge-danger"
+                           href="#"
+                           onclick="confirmDeleteUser('${user.userID}', '${user.userName}')">删除</a>
+                    </td>
+            </th:block>
+            </tbody>
+        </table>
+    </div>
+    <br>
+
+    <div class="modal fade" id="deleteModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">重要提示</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="warningMessage">与该用户相关的所有信息即将永久性删除, 是否继续?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">返回</button>
+                    <a id="deleteUser" href="#" class="btn btn-danger">是的,删除</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:if="${pagination != null}" th:include="pagination :: pageBar"></div>
+
+    <div th:include="footer :: commonFooter"></div>
+</div>
+</body>
+</html>

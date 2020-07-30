@@ -1,0 +1,117 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>测试点列表</title>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/oj.css">
+
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/js/bootstrap/popper.min.js"></script>
+    <script src="/js/bootstrap/bootstrap.min.js"></script>
+
+    <script>
+        function warnningDelete(problemID, testPointID) {
+            var url = "/delete-test-point?problemID=" + problemID + "&testPointID=" + testPointID;
+            $('#deleteURL').attr('href', url);
+        }
+    </script>
+</head>
+<body>
+<div th:include="navbar :: commonNavBar"></div>
+
+<div class="container custom-container">
+    <h3 class="text-center"><a th:href="'/problem?problemID='+${problem.problemID}" th:text="${problem.title}"></a></h3>
+    <br>
+    <div class="card">
+        <h5 class="card-header">所有测试点</h5>
+        <table class="table table-sm table-striped"
+               style="margin-bottom: 0rem;" th:if="${testPointList != null && #arrays.length(testPointList) > 0}">
+            <thead>
+            <tr>
+                <th class="text-center">ID</th>
+                <th class="text-center">长度</th>
+                <th class="text-center">查看</th>
+                <th class="text-center">删除</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="testPointID: ${testPointList}">
+                <tr>
+                    <td class="text-center" th:text="'#'+${testPointID.testPointID}"></td>
+                    <td class="text-center" th:text="${testPointID.inputTextLength}"></td>
+                    <td class="text-center">
+                        <a th:href="'/show-test-point?problemID='+${problem.problemID} + '&testPointID='+${testPointID.testPointID}">想看看我</a>
+                    </td>
+                    <!--                            todo js函数调用-->
+                    <td class="text-center"><a data-target="#deleteModal"
+                                               data-toggle="modal"
+                                               href="#"
+                                               th:onclick="warnningDelete(${problem.problemID}, ${testPointID.testPointID})">删除</a>
+                    </td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+
+        <div class="modal-body" th:if="${testPointList == null && #arrays.length(testPointList) == 0}">
+            <h4 class="text-center">此题目尚未添加测试点</h4>
+        </div>
+        </c:choose>
+    </div>
+    <br>
+    <div class="card">
+        <h5 class="card-header">添加数据</h5>
+        <div class="card-body">
+            <!--<h4 class="card-title">Special title treatment</h4>-->
+            <form class="form-group" action="/add-test-point" method="post">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>输入数据</label>
+                        <textarea class="form-control pre-scrollable" style="font-family: Consolas"
+                                  name="inputInputData" rows="7"></textarea>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label>输出数据</label>
+                        <textarea class="form-control pre-scrollable" style="font-family: Consolas"
+                                  name="inputOutputData" rows="7"></textarea>
+                    </div>
+                </div>
+                <input name="inputProblemID" th:value="${problem.problemID}" hidden>
+                <br>
+                <div class="text-center">
+                    <a th:href="'/problem-edit?problemID='+${problem.problemID}" class="btn btn-primary">编辑题目</a>
+                    <button type="submit" class="btn btn-success">添加数据</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="deleteModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">重要提示</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>测试点数据将永久删除, 是否继续?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">返回</button>
+                <a id="deleteURL" href="#" class="btn btn-danger">是的,删除</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:include="footer :: commonFooter"></div>
+</body>
+</html>
+
+

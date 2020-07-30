@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>排行榜</title>
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/oj.css">
+
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/js/bootstrap/popper.min.js"></script>
+    <script src="/js/bootstrap/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div th:include="navbar :: commonNavBar"></div>
+
+<div class="container custom-container">
+    <h4 th:text="${tableTitle}"></h4>
+    <div class="card">
+        <table class="table table-striped text-center" style="margin-bottom: 0rem;">
+            <thead>
+            <tr>
+                <th>排名</th>
+                <th>用户名</th>
+                <th>个性签名</th>
+                <th>注册日期</th>
+                <th>通过/提交</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="user,state: ${userList}">
+                <tr>
+                    <td th:text="${state.count+(pagination.currentPage-1)*pagination.countPerPage}"></td>
+                    <td><a th:href="'/user?userID='+${user.userID}" th:text="${user.userName}"></a></td>
+                    <td th:text="${user.bio}"></td>
+                    <td th:text="${#dates.format(user.registerTime, 'yyyy/MM/dd')}"></td>
+                    <td th:text="${user.accepted}+'/'+${user.submitted}"></td>
+            </th:block>
+            </tbody>
+        </table>
+    </div>
+    <br>
+    <div th:if="${pagination != null}" th:include="pagination :: pageBar"></div>
+    <div th:include="footer :: commonFooter"></div>
+</div>
+</body>
+</html>
