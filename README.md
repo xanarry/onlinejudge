@@ -133,16 +133,16 @@ restrictedSyscalls=fork,   nanosleep,pause,reboot,   rmdir,rename,unlink,umount,
 
 
 ## 效果预览
-![](https://raw.githubusercontent.com/xanarry/oj/master/demo-pics/home.png)
+![](https://raw.githubusercontent.com/xanarry/onlinejudge/master/demo-pics/home.png)
 > 图为首页.
 
-![](https://raw.githubusercontent.com/xanarry/oj/master/demo-pics/problem-list.png)
+![](https://raw.githubusercontent.com/xanarry/onlinejudge/master/demo-pics/problem-list.png)
 > 图为题目列表.
 
-![](https://raw.githubusercontent.com/xanarry/oj/master/demo-pics/submit-record.png)
+![](https://raw.githubusercontent.com/xanarry/onlinejudge/master/demo-pics/submit-record.png)
 > 图为提交记录.
 
-![](https://raw.githubusercontent.com/xanarry/oj/master/demo-pics/contest-overview.png)
+![](https://raw.githubusercontent.com/xanarry/onlinejudge/master/demo-pics/contest-overview.png)
 > 图为比赛.
 
 ## 参考
