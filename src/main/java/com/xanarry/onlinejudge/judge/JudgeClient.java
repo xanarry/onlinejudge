@@ -93,7 +93,7 @@ public class JudgeClient {
         private int memLimit;
         private int codeLength;
         private String language;
-        private String testpointCount;
+        private int testpointCount;
         private String sourcecode;
          */
 
