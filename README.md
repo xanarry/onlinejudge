@@ -22,11 +22,11 @@ JVM Vendor:   Oracle Corporation
 
 
 ## 评测机支持语言
-1. __C__
-2. __C++__
-3. __Java__
-4. __Python2.x__
-5. __Python3.x__
+1. C
+2. C++
+3. Java
+4. Python2.x
+5. Python3.x
 
 
 
@@ -34,15 +34,15 @@ JVM Vendor:   Oracle Corporation
 1. 运行环境要求Linux 64位系统, 内存1G以上, 可用磁盘空间5G以上.
 2. 安装运行时环境, gcc, g++, Java, Python2,Python3, 并设置相关环境变量,评测机在编译的时候需要本地环境支持.
 3. 安装MySQL数据库并导入数据库定义.
-4. 将系统语言设置为英文, 在 __/etc/default/locale__ 中添加 __LANG=en.US__, 防止gcc标准错误中出现非ASCII字符导致web端显示乱码.
+4. 将系统语言设置为英文, 在 /etc/default/locale 中添加 LANG=en.US, 防止gcc标准错误中出现非ASCII字符导致web端显示乱码.
 
 
 
 ## 编译运行评测机
 1. 环境准备：编译之前确保主机是linux系统，并安装有make和gcc.
 2. 编译程序：下载judgeServer到任意目录，终端进入该目录，执行`make`,如果不出意外，执行之后将在目录中生成一个`main`可执行文件。
-3. 配置参数：打开__oj.conf__文件, 默认配置文件如下, 需要指定的是评测机的端口port和测试样例文件所在的跟目录。其中java_policy与debug暂时未用到。
-4. 运行程序：确保__oj.conf__与__main__在同一目录，执行`./main`启动评测机
+3. 配置参数：打开oj.conf文件, 默认配置文件如下, 需要指定的是评测机的端口port和测试样例文件所在的跟目录。其中java_policy与debug暂时未用到。
+4. 运行程序：确保oj.conf与main在同一目录，执行`./main`启动评测机
 ```
 #judge server系统配置文件
 #请严格按照格式配置, 否则系统会无法读取配置文件
