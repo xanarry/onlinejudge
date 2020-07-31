@@ -8,6 +8,7 @@
 #include "global.h"
 #include "compile.h"
 #include "utils.h"
+#include "io.h"
 
 /*
 return value:
@@ -36,7 +37,6 @@ int compile(struct request *req, struct response *resp) {
             perror("dup2");
             return -1;
         }
-
         //chdir(req->submitDir); 切换到代码所在目录
 
         //创建子进程编程代码
@@ -51,15 +51,16 @@ int compile(struct request *req, struct response *resp) {
         return -1;
     }
 
-    int hasRead = 0;
+    //初始化缓冲区
     resp->compileResult[0] = '\0';
-    //从管道读取编译错误信息
-    //只读取开始的前8k显示给用户
+    //从管道读取编译错误信息，只读取开始的前8k显示给用户，因为构造相应json字符串的
+    //上限是8192*2，保存过长的编译输出信息会导致构造是数组越界。
     read_n_byte_to_buf(fd[0], resp->compileResult, BUF_SIZE);
     //超过8k的数据丢弃
     char discard[BUF_SIZE] = {0};
     while (read(fd[0], discard, BUF_SIZE) > 0);
-    trimTail(resp->compileResult);
+    trimTail(resp->compileResult); //删除尾部空白
+
 
     if (WIFEXITED(status)) { //进程正常退出
         resp->compileRetVal = WEXITSTATUS(status);

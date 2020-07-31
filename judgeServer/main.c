@@ -8,19 +8,26 @@
 #include "judge.h"
 #include "global.h"
 #include "socketUtils.h"
-#include "io.h"
 #include "utils.h"
 
-
+//默认配置数据
 int debug = 1;
 int port = 8888;
 int outputFileSize = 8192;
 char testPointDir[FILE_PATH_LEN] = "./testpoints/";
 char restrictedSyscalls[100][25] = {0};
 
+//标志程序是否需要继续运行
 static volatile int keepRunning = 1;
+//标志程序是否正处于网络阻塞等待中
 static volatile int waitingForConnection = 1;
 
+/*
+捕获ctrl+c中断程序
+函数先将keepRunning设置为0，如果程序刚评测完一个用户程序，检查到这个标志变量为0
+后就会直接清理文件退出。但是设置标志变量后，程序可能处于阻塞状态，没法感知到这个
+修改，这个时候发送一个连接请求，并发送几个字节破坏阻塞状态。
+*/
 void intHandler(int dummy) {
     puts("捕获ctrl c命令, 退出程序");
     keepRunning = 0;
@@ -35,6 +42,10 @@ void intHandler(int dummy) {
     }
 }
 
+
+/*
+将结果发送到客户端
+*/
 void writeResponse(int fd, char *content) {
     int hlen = strlen(content); //字符串长度(主机序)
     int nlen = htonl(hlen); //转为网络序
@@ -43,6 +54,10 @@ void writeResponse(int fd, char *content) {
     shutdown(fd, SHUT_WR);//关闭写
 }
 
+
+/*
+从程序所在目录的oj.conf文件中加载配置数据
+*/
 void loadConfiguration() {
     FILE *fp = fopen("./oj.conf", "r");
     if (fp == NULL) {
@@ -107,6 +122,8 @@ void showConfig() {
     puts("");
 }
 
+
+
 int main(int argc , char *argv[]) {
     //捕获ctrl_c命令
     signal(SIGINT, intHandler);
@@ -116,7 +133,7 @@ int main(int argc , char *argv[]) {
     loadConfiguration();
     showConfig();
 
-    //创建临时目录
+    //创建临时目录，保存运行过程中产生的数据
     char tempdir[] = "./tmp";
     if (access(tempdir, 0) == -1) {
         if (mkdir(tempdir, 0777) < 0) {
@@ -134,20 +151,23 @@ int main(int argc , char *argv[]) {
     }
     printf("程序正在监听端口%d\n", port);
 
+    //程序持续运行，直到keepRunning被修改为0
     while (keepRunning) {
         struct sockaddr_in clientAddr;
-        waitingForConnection = 1;
+        waitingForConnection = 1; //设置阻塞标志
         int fd = acceptNewConn(serverSocket, &clientAddr);
-        waitingForConnection = 0;
+        waitingForConnection = 0; //释放阻塞标志
+
+        //如果已经ctrl+c
         if (keepRunning == 0) {
-            char flag[4] = {0};
-            read_n_byte_to_buf(fd, flag, (ssize_t) 4);
-            if (strncmp(flag, "EXIT", 4) == 0) {
-                shutdown(fd, SHUT_RDWR);
-                break;
-            }
+            char nonSense[BUF_SIZE] = {0};
+            //将输入数据读完，然后直接退出循环
+            while(read(fd, nonSense, BUF_SIZE) > 0);
+            shutdown(fd, SHUT_RDWR);//关闭套接字
+            break;
         }
 
+        //构造请求与相应对象
         struct request *req = (struct request *) malloc (sizeof(struct request));
         struct response *resp = (struct response *) malloc (sizeof(struct response));
         resp->req = req;
@@ -171,13 +191,12 @@ int main(int argc , char *argv[]) {
         printRequest(req);
 
 
-        //compile sorcecode
+        //编译代码
         char runningDir[256] = {0};
         sprintf(runningDir, "%s/%d", tempdir, req->submitID);
         int retVal = compile(req, resp);
         printf("compile ret: %d\n", retVal);
         if (retVal == 0) {
-            //trun user program
             puts("\n开始评测");
             doJudge(req, resp);
         }
