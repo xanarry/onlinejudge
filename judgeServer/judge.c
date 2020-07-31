@@ -78,7 +78,7 @@ void prepareToJudge(struct request *req, struct response *resq) {
     }
 
     if (strcasecmp(req->language, "java") == 0) {
-        sprintf(req->compileCmd, "javac -J-Xms64m -J-Xmx256m %s", req->sorcecodePath);
+        sprintf(req->compileCmd, "javac -J-Xms64m -J-Xmx256m  -encoding utf8 %s", req->sorcecodePath);
         sprintf(req->executeCmd, "java -cp %s Main", req->submitDir);
     }
 

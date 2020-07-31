@@ -2,6 +2,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <signal.h>
 #include <sys/stat.h>
 #include "compile.h"
@@ -9,6 +10,7 @@
 #include "global.h"
 #include "socketUtils.h"
 #include "utils.h"
+#include "io.h"
 
 //默认配置数据
 int debug = 1;
