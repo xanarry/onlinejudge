@@ -53,23 +53,23 @@ public class JudgeClient {
     //获取spring上下文
     ApplicationContext context = ApplicationContextHolder.getContext();
     //访问提交记录
-    private SubmitRecordDao submitRecordDao = context.getBean(SubmitRecordDao.class);
+    private final SubmitRecordDao submitRecordDao = context.getBean(SubmitRecordDao.class);
     //访问系统错误
-    private SystemErrorDao systemErrorDao = context.getBean(SystemErrorDao.class);
+    private final SystemErrorDao systemErrorDao = context.getBean(SystemErrorDao.class);
     //访问评测详细结果
-    private JudgeDetailDao judgeDetailDao = context.getBean(JudgeDetailDao.class);
+    private final JudgeDetailDao judgeDetailDao = context.getBean(JudgeDetailDao.class);
     //访问编译结果
-    private CompileInfoDao compileInfoDao = context.getBean(CompileInfoDao.class);
+    private final CompileInfoDao compileInfoDao = context.getBean(CompileInfoDao.class);
     //访问题目结果
-    private ProblemDao problemDao = context.getBean(ProblemDao.class);
+    private final ProblemDao problemDao = context.getBean(ProblemDao.class);
     //访问测试点结果
-    private TestPointDao testPointDao = context.getBean(TestPointDao.class);
+    private final TestPointDao testPointDao = context.getBean(TestPointDao.class);
     //访问oj配置数据
-    private OjConfiguration configuration = context.getBean(OjConfiguration.class);
+    private final OjConfiguration configuration = context.getBean(OjConfiguration.class);
 
 
-    private InetSocketAddress serverAddress;
-    private Executor executor;
+    private final InetSocketAddress serverAddress;
+    private final Executor executor;
 
     private JudgeClient() {
         executor = new ThreadPoolExecutor(15, 100, 1, TimeUnit.MINUTES, new ArrayBlockingQueue<>(1000));
@@ -142,7 +142,8 @@ public class JudgeClient {
                 System.arraycopy(languageBytes, 0, zeroFilledBytes, 0, languageBytes.length);
                 out.write(zeroFilledBytes, 0, 20);
                 out.write(request.getSourcecode().getBytes());
-                socket.shutdownOutput();
+                out.flush();
+                //socket.shutdownOutput();
 
                 System.out.println(submitRecord);
 
@@ -152,7 +153,7 @@ public class JudgeClient {
 
                 int dataLength = in.readInt();
                 byte[] dataBuf = readNBytes(in, dataLength);
-                socket.shutdownInput();
+                //socket.shutdownInput();
 
                 String responseData = new String(dataBuf);
                 System.out.println(responseData);
@@ -177,6 +178,12 @@ public class JudgeClient {
 
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
         });

@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import static sun.misc.IOUtils.readNBytes;
 
@@ -19,24 +21,109 @@ import static sun.misc.IOUtils.readNBytes;
  * Created by xanarry on 18-1-7.
  */
 public class JudgeTest {
+    private static final String host = "127.0.0.1";
+    private static final int port = 8040;
+    private static int sid = 0;
+    private static final int n = 200;
+    private static synchronized int nextID() {
+        return sid++;
+    }
 
-    public static void main(String[] argv) throws IOException {
+    public static void main(String[] args)  throws IOException {
+        Thread c = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    for (int i = 0; i < n; i++) test(nextID(), "c");
+                } catch (Exception ignored) {
+                }
+            }
+        });
+
+        Thread java = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    for (int i = 0; i < n; i++) test(nextID(), "java");
+                } catch (Exception ignored) {
+                }
+            }
+        });
+
+        Thread cpp = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    for (int i = 0; i < n; i++) test(nextID(), "c++");
+                } catch (Exception ignored) {
+                }
+            }
+        });
+
+        Thread python = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    for (int i = 0; i < n; i++) test(nextID(), "python3");
+                } catch (Exception ignored) {
+                }
+            }
+        });
+
+
+        Executor s = Executors.newCachedThreadPool();
+        for (int i = 0; i < 6; i++) {
+            s.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        test(nextID(), "java");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+        }
+
+
+
+        //c.start();java.start();cpp.start();python.start();
+    }
+
+
+    public static void test(int id, String language) throws IOException {
         Request request = new Request();
-        request.setSubmitID(0);
+        request.setSubmitID(id);
         request.setProblemID(1);
-        String language = "c";
 
         //根据语言选择时间和内存限制
         if (language.equals("c") || language.equals("c++") || language.equals("cpp")) {
             request.setTimeLimit(1000);
             request.setMemLimit(65536);
         } else {
-            request.setTimeLimit(2000);
+            request.setTimeLimit(40000);
             request.setMemLimit(65536 * 2);
         }
 
-        //设置代码的字节长度
         File sourceCodeFile = new File("src\\main\\java\\com\\xanarry\\onlinejudge\\judge\\testcode\\Main.c");
+        switch (language.toLowerCase()) {
+            case "c":
+                sourceCodeFile = new File("src\\main\\java\\com\\xanarry\\onlinejudge\\judge\\testcode\\Main.c");
+                break;
+            case "c++":
+                sourceCodeFile = new File("src\\main\\java\\com\\xanarry\\onlinejudge\\judge\\testcode\\Main.cpp");
+                break;
+            case "java":
+                sourceCodeFile = new File("src\\main\\java\\com\\xanarry\\onlinejudge\\judge\\testcode\\Main.java");
+                break;
+            case "python2":
+                sourceCodeFile = new File("src\\main\\java\\com\\xanarry\\onlinejudge\\judge\\testcode\\Mainpy2.py");
+                break;
+            case "python3":
+                sourceCodeFile = new File("src\\main\\java\\com\\xanarry\\onlinejudge\\judge\\testcode\\Mainpy3.py");
+                break;
+        }
         String sourcecode = FileUtils.readFileToString(sourceCodeFile);
         //System.out.println(sourcecode);
 
@@ -49,7 +136,7 @@ public class JudgeTest {
 
         System.out.println(request);
         //192.168.56.102
-        foo(request, new InetSocketAddress("127.0.0.1", 2345));
+        foo(request, new InetSocketAddress(host, port));
     }
 
     private static void foo(Request request, InetSocketAddress serverAddress) {
@@ -70,11 +157,11 @@ public class JudgeTest {
             System.arraycopy(languageBytes, 0, zeroFilledBytes, 0, languageBytes.length);
             out.write(zeroFilledBytes, 0, 20);
             out.write(request.getSourcecode().getBytes());
-            socket.shutdownOutput();
+            out.flush();
 
             int dataLength = in.readInt();
             byte[] dataBuf = readNBytes(in, dataLength);
-            socket.shutdownInput();
+            socket.close();
 
             String responseData = new String(dataBuf);
             System.out.println(responseData);

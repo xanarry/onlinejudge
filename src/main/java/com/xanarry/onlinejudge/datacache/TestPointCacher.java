@@ -25,7 +25,7 @@ public class TestPointCacher {
     @Autowired
     private ContestProblemDao contestProblemDao;
 
-    private Jedis jedis = new Jedis("localhost", 6379);  //指定Redis服务Host和port
+    private final Jedis jedis = new Jedis("localhost", 6379);  //指定Redis服务Host和port
 
     public boolean cacheTestPointOfProblem(int problemID) {
         return cacheTestPointOfProblem(problemID, 2 * 60 * 60);
