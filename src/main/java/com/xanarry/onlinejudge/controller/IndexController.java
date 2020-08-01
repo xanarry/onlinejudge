@@ -28,11 +28,6 @@ public class IndexController {
         List<ContestBean> contestBeanList = contest.getContestList(0, 5);
         List<DiscussBean> discussBeanList = discuss.getDiscussTitleList(null, null, null, 0, 5);
 
-        HttpSession session = request.getSession();
-        session.setAttribute("userID", 1);
-        session.setAttribute("userName", "xanarry");
-        session.setAttribute("userType", 2);
-
         mp.addAttribute("latestContest", contestBeanList);
         mp.addAttribute("latestDiscuss", discussBeanList);
         return "index";

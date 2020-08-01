@@ -68,12 +68,7 @@ public class LoginAndLogoutController {
         String srememberMe = request.getParameter("inputRememberMe");
 
         boolean rememberMe = srememberMe != null && srememberMe.equals("1");
-
         String sessionValidateCode = (String) request.getSession().getAttribute("validateCode");
-
-        System.out.println("email:" + email + " password:" + password + " rememberMe:" + rememberMe + " inputValidateCode:" + validateCode + " sessionVal:" + sessionValidateCode);
-
-
         UserBean userBean = userDao.getUserByEmail(email);
 
         String jsonPattern = "{\"userExist\" : %s, \"correctPassword\" : %s, \"correctValidateCode\" :%s}";
@@ -87,9 +82,9 @@ public class LoginAndLogoutController {
                 //密码正确,检查验证码
                 if (validateCode.equals(sessionValidateCode)) {
                     HttpSession session = request.getSession();
-                    session.setAttribute("userID", userBean.getUserID() + "");
+                    session.setAttribute("userID", userBean.getUserID());
                     session.setAttribute("userName", userBean.getUserName());
-                    session.setAttribute("userType", userBean.getUserType() + "");
+                    session.setAttribute("userType", userBean.getUserType());
                     if (rememberMe) { //记住一周
                         session.setMaxInactiveInterval(7 * 24 * 60 * 60);
                     }
