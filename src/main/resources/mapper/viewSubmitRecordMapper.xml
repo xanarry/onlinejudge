@@ -84,7 +84,8 @@
 
 
     <select id="getUserAcceptedProblems" resultType="java.lang.Integer">
-        SELECT DISTINCT problem_id FROM v_submit_record WHERE user_id=#{userID} AND result ='Accepted' ORDER BY problem_id
+        SELECT DISTINCT problem_id FROM v_submit_record WHERE user_id=#{userID} AND result ='Accepted' ORDER BY
+        problem_id
     </select>
 
     <resultMap id="submitRecordMap" type="com.xanarry.onlinejudge.model.ViewSubmitRecordBean">

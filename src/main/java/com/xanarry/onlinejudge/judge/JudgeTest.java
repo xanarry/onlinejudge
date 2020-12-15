@@ -25,11 +25,12 @@ public class JudgeTest {
     private static final int port = 8040;
     private static int sid = 0;
     private static final int n = 200;
+
     private static synchronized int nextID() {
         return sid++;
     }
 
-    public static void main(String[] args)  throws IOException {
+    public static void main(String[] args) throws IOException {
         Thread c = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -85,7 +86,6 @@ public class JudgeTest {
             });
 
         }
-
 
 
         //c.start();java.start();cpp.start();python.start();

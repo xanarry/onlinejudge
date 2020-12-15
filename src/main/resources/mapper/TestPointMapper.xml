@@ -6,36 +6,36 @@
 <mapper namespace="com.xanarry.onlinejudge.dao.TestPointDao">
     <!--insert-->
     <insert id="addTestPoint" parameterType="com.xanarry.onlinejudge.model.TestPointBean">
-    INSERT INTO
-    t_test_point
-    (
-    `problem_id`,
-    `test_point_id`,
-    `input_text_path`,
-    `input_text_length`,
-    `output_text_path`,
-    `output_text_length`
-    )
-    VALUES
-    (
+        INSERT INTO
+        t_test_point
+        (
+        `problem_id`,
+        `test_point_id`,
+        `input_text_path`,
+        `input_text_length`,
+        `output_text_path`,
+        `output_text_length`
+        )
+        VALUES
+        (
         #{problemID},
         #{testPointID},
         #{inputTextPath},
         #{inputTextLength},
         #{outputTextPath},
         #{outputTextLength}
-    )
-</insert>
+        )
+    </insert>
 
 
     <!--delete-->
     <delete id="deleteTestPoint">
-    DELETE FROM t_test_point WHERE problem_id = #{problemID} AND test_point_id = #{testPointID}
-</delete>
+        DELETE FROM t_test_point WHERE problem_id = #{problemID} AND test_point_id = #{testPointID}
+    </delete>
 
     <!--update-->
     <update id="updateTestPoint">
-    UPDATE t_test_point SET
+        UPDATE t_test_point SET
         problem_id = #{testPointID.problemID}
         test_point_id = #{testPointID.testPointID}
         input_text_path = #{testPointID.inputTextPath}
@@ -43,18 +43,18 @@
         output_text_path = #{testPointID.outputTextPath}
         output_text_length = #{testPointID.outputTextLength}
         WHERE WHERE problem_id = #{testPointID.problemID} AND test_point_id = #{testPointID.testPointID}
-</update>
+    </update>
 
 
     <!--select-->
     <select id="getTestPointList" resultMap="testPointMap" resultType="com.xanarry.onlinejudge.model.TestPointBean">
-    SELECT * FROM t_test_point WHERE problem_id = #{problemID} ORDER BY test_point_id ASC
-</select>
+        SELECT * FROM t_test_point WHERE problem_id = #{problemID} ORDER BY test_point_id ASC
+    </select>
 
 
     <select id="getTestPoint" resultMap="testPointMap" resultType="com.xanarry.onlinejudge.model.TestPointBean">
-    SELECT * FROM t_test_point WHERE problem_id = #{problemID} AND test_point_id = #{testPointID}
-</select>
+        SELECT * FROM t_test_point WHERE problem_id = #{problemID} AND test_point_id = #{testPointID}
+    </select>
 
     <resultMap id="testPointMap" type="com.xanarry.onlinejudge.model.TestPointBean">
         <id property="problemID" column="problem_id"/>

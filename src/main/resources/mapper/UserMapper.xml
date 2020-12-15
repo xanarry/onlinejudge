@@ -44,17 +44,17 @@
 
     <update id="updateUser">
         UPDATE t_user SET
-          email           = #{email},
-          user_name       = #{userName},
-          password        = #{password},
-          register_time   = #{registerTime},
-          last_login_time = #{lastLoginTime},
-          user_type       = #{userType},
-          prefer_language = #{preferLanguage},
-          accepted        = #{accepted},
-          submitted       = #{submitted},
-          bio             = #{bio},
-          send_code       = #{sendCode}
+        email = #{email},
+        user_name = #{userName},
+        password = #{password},
+        register_time = #{registerTime},
+        last_login_time = #{lastLoginTime},
+        user_type = #{userType},
+        prefer_language = #{preferLanguage},
+        accepted = #{accepted},
+        submitted = #{submitted},
+        bio = #{bio},
+        send_code = #{sendCode}
         WHERE user_id = #{userID}
     </update>
 

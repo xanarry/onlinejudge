@@ -22,19 +22,19 @@
     <insert id="addSubmitRecord" keyColumn="submit_id" keyProperty="submitID"
             parameterType="com.xanarry.onlinejudge.model.SubmitRecordBean"
             useGeneratedKeys="true">
-    insert into t_submit_record (user_id, problem_id, contest_id,
-      `result`, `language`, code_length,
-      time_consume, mem_consume, submit_time,
-      source_code)
-    values (#{userID,jdbcType=INTEGER}, #{problemID,jdbcType=INTEGER}, #{contestID,jdbcType=INTEGER},
-      #{result,jdbcType=VARCHAR}, #{language,jdbcType=VARCHAR}, #{codeLength,jdbcType=INTEGER},
-      #{timeConsume,jdbcType=INTEGER}, #{memConsume,jdbcType=INTEGER}, #{submitTime,jdbcType=BIGINT},
-      #{sourceCode,jdbcType=LONGVARCHAR})
-  </insert>
+        insert into t_submit_record (user_id, problem_id, contest_id,
+        `result`, `language`, code_length,
+        time_consume, mem_consume, submit_time,
+        source_code)
+        values (#{userID,jdbcType=INTEGER}, #{problemID,jdbcType=INTEGER}, #{contestID,jdbcType=INTEGER},
+        #{result,jdbcType=VARCHAR}, #{language,jdbcType=VARCHAR}, #{codeLength,jdbcType=INTEGER},
+        #{timeConsume,jdbcType=INTEGER}, #{memConsume,jdbcType=INTEGER}, #{submitTime,jdbcType=BIGINT},
+        #{sourceCode,jdbcType=LONGVARCHAR})
+    </insert>
 
 
     <delete id="deleteSubmitRecord">
-      DELETE  from t_submit_record WHERE submit_id = #{submitID}
+        DELETE from t_submit_record WHERE submit_id = #{submitID}
     </delete>
 
     <delete id="deleteSubmitRecordByUserID">
@@ -44,42 +44,43 @@
 
     <update id="updateSubmitRecord">
         UPDATE t_submit_record SET
-            `user_id` = #{userID},
-            `problem_id` = #{problemID},
-            `contest_id` = #{contestID},
-            `result` = #{result},
-            `language` = #{language},
-            `source_code` = #{sourceCode},
-            `code_length` = #{codeLength},
-            `time_consume` = #{timeConsume},
-            `mem_consume` = #{memConsume},
-            `submit_time` = #{submitTime},
-            `judge_time` = #{judgeTime}
+        `user_id` = #{userID},
+        `problem_id` = #{problemID},
+        `contest_id` = #{contestID},
+        `result` = #{result},
+        `language` = #{language},
+        `source_code` = #{sourceCode},
+        `code_length` = #{codeLength},
+        `time_consume` = #{timeConsume},
+        `mem_consume` = #{memConsume},
+        `submit_time` = #{submitTime},
+        `judge_time` = #{judgeTime}
         WHERE `submit_id` = #{submitID}
     </update>
     <select id="getSubmitRecordByID" resultMap="submitRecordMap"
             resultType="com.xanarry.onlinejudge.model.SubmitRecordBean">
-      SELECT * FROM t_submit_record WHERE submit_id = #{submitID}
+        SELECT * FROM t_submit_record WHERE submit_id = #{submitID}
     </select>
 
     <select id="getSubmitRecordListByProblemID" resultMap="submitRecordMap"
             resultType="com.xanarry.onlinejudge.model.SubmitRecordBean">
-      SELECT * FROM t_submit_record WHERE problem_id = #{problemID}
+        SELECT * FROM t_submit_record WHERE problem_id = #{problemID}
     </select>
 
     <select id="getSubmitRecordListByUserID" resultMap="submitRecordMap"
             resultType="com.xanarry.onlinejudge.model.SubmitRecordBean">
-      SELECT * FROM t_submit_record WHERE user_id = #{userID} ORDER BY submit_id DESC limit #{start}, #{count}
+        SELECT * FROM t_submit_record WHERE user_id = #{userID} ORDER BY submit_id DESC limit #{start}, #{count}
     </select>
 
     <select id="getSubmitRecordListByProblemUser" resultMap="submitRecordMap"
             resultType="com.xanarry.onlinejudge.model.SubmitRecordBean">
-      SELECT * FROM t_submit_record WHERE user_id = #{userID} AND problem_id = #{problemID} ORDER BY submit_id DESC limit #{start}, #{count}
+        SELECT * FROM t_submit_record WHERE user_id = #{userID} AND problem_id = #{problemID} ORDER BY submit_id DESC
+        limit #{start}, #{count}
     </select>
 
     <select id="getSubmitRecordListOrderedByDate" resultMap="submitRecordMap"
             resultType="com.xanarry.onlinejudge.model.SubmitRecordBean">
-      SELECT * FROM t_submit_record ORDER BY submit_id DESC limit #{start}, #{count}
+        SELECT * FROM t_submit_record ORDER BY submit_id DESC limit #{start}, #{count}
     </select>
 
     <select id="getSubmitRecordList" resultMap="submitRecordMap"

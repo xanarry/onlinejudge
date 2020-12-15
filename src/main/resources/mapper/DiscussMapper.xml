@@ -5,39 +5,39 @@
 
 <mapper namespace="com.xanarry.onlinejudge.dao.DiscussDao">
     <insert id="insertDiscuss" useGeneratedKeys="true" keyProperty="postID" keyColumn="post_id">
-      INSERT INTO t_discuss (
-      `direct_fid`,
-      `root_id`,
-      `type`,
-      `porc_id`,
-      `theme`,
-      `title`,
-      `content`,
-      `post_time`,
-      `user_id`,
-      `user_name`,
-      `reply`,
-      `watch`,
-      `first`) VALUES (
-      #{directFID},
-      #{rootID},
-      #{type},
-      #{porcID},
-      #{theme},
-      #{title},
-      #{content},
-      #{postTime},
-      #{userID},
-      #{userName},
-      #{reply},
-      #{watch},
-      #{first}
-      )
+        INSERT INTO t_discuss (
+        `direct_fid`,
+        `root_id`,
+        `type`,
+        `porc_id`,
+        `theme`,
+        `title`,
+        `content`,
+        `post_time`,
+        `user_id`,
+        `user_name`,
+        `reply`,
+        `watch`,
+        `first`) VALUES (
+        #{directFID},
+        #{rootID},
+        #{type},
+        #{porcID},
+        #{theme},
+        #{title},
+        #{content},
+        #{postTime},
+        #{userID},
+        #{userName},
+        #{reply},
+        #{watch},
+        #{first}
+        )
     </insert>
 
 
     <delete id="deleteDiscussByPostID">
-      DELETE FROM t_discuss WHERE post_id=#{postID};
+        DELETE FROM t_discuss WHERE post_id=#{postID};
     </delete>
 
     <delete id="deleteDiscussByUserD">
@@ -75,7 +75,7 @@
     </select>
 
     <select id="getDiscussListByRootID" resultMap="discussMap" resultType="com.xanarry.onlinejudge.model.DiscussBean">
-      SELECT * FROM t_discuss WHERE root_id=#{rootID} AND `post_id` != `root_id` ORDER BY post_time DESC
+        SELECT * FROM t_discuss WHERE root_id=#{rootID} AND `post_id` != `root_id` ORDER BY post_time DESC
     </select>
 
     <select id="getDiscussTitleList" resultMap="discussMap" resultType="com.xanarry.onlinejudge.model.DiscussBean">

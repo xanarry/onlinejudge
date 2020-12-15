@@ -29,7 +29,7 @@
 
     <select id="getContestUserList" resultMap="contestUserMap"
             resultType="com.xanarry.onlinejudge.model.ContestUserBean">
-      SELECT * FROM t_contest_user WHERE contest_id=#{contestID}
+        SELECT * FROM t_contest_user WHERE contest_id=#{contestID}
     </select>
 
     <select id="getCount" resultType="java.lang.Integer">

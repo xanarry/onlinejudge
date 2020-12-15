@@ -5,14 +5,14 @@
 
 <mapper namespace="com.xanarry.onlinejudge.dao.ContestProblemDao">
     <insert id="addProlem">
-      INSERT INTO t_contest_problem (
-      contest_id, problem_id, title, inner_id, accepted, submitted)
-      VALUES
-      (#{contestID},#{problemID},#{title}, #{innerID}, #{accepted}, #{submitted})
+        INSERT INTO t_contest_problem (
+        contest_id, problem_id, title, inner_id, accepted, submitted)
+        VALUES
+        (#{contestID},#{problemID},#{title}, #{innerID}, #{accepted}, #{submitted})
     </insert>
 
     <delete id="deleteProblem">
-      DELETE FROM t_contest_problem WHERE contest_id=#{contestID} AND inner_id=#{innerID}
+        DELETE FROM t_contest_problem WHERE contest_id=#{contestID} AND inner_id=#{innerID}
     </delete>
 
     <delete id="deleteAllProblem">
@@ -20,24 +20,24 @@
     </delete>
 
     <update id="updateProblem">
-      UPDATE t_contest_problem SET
-      contest_id=#{contestID},
-      problem_id=#{problemID},
-      title=#{title},
-      inner_id=#{innerID},
-      accepted=#{accepted},
-      submitted=#{submitted}
-      WHERE contest_id=#{contestID} AND problem_id=#{problemID}
+        UPDATE t_contest_problem SET
+        contest_id=#{contestID},
+        problem_id=#{problemID},
+        title=#{title},
+        inner_id=#{innerID},
+        accepted=#{accepted},
+        submitted=#{submitted}
+        WHERE contest_id=#{contestID} AND problem_id=#{problemID}
     </update>
 
     <select id="getContestProblem" resultMap="contestProblemMap"
             resultType="com.xanarry.onlinejudge.model.ContestProblemBean">
-      SELECT * FROM t_contest_problem WHERE contest_id=#{contestID} AND problem_id=#{problemID}
+        SELECT * FROM t_contest_problem WHERE contest_id=#{contestID} AND problem_id=#{problemID}
     </select>
 
     <select id="getContestProblemList" resultMap="contestProblemMap"
             resultType="com.xanarry.onlinejudge.model.ContestProblemBean">
-      SELECT * FROM t_contest_problem WHERE contest_id=#{contestID} ORDER BY inner_id ASC
+        SELECT * FROM t_contest_problem WHERE contest_id=#{contestID} ORDER BY inner_id ASC
     </select>
 
     <resultMap id="contestProblemMap" type="com.xanarry.onlinejudge.model.ContestProblemBean">

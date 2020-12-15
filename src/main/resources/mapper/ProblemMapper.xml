@@ -45,7 +45,7 @@
         #{dynamicLangMemLimit},
         #{accepted},
         #{submitted})
-</insert>
+    </insert>
 
 
     <!--delete-->

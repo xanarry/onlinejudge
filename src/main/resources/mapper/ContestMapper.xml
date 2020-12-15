@@ -6,37 +6,37 @@
 <mapper namespace="com.xanarry.onlinejudge.dao.ContestDao">
     <insert id="addContest" keyProperty="contestID" keyColumn="contest_id" useGeneratedKeys="true">
         INSERT INTO t_contest (
-          title,
-          `desc`,
-          start_time,
-          end_time,
-          register_start_time,
-          register_end_time,
-          password,
-          sponsor,
-          contest_type,
-          create_time
-          ) VALUES (
-          #{title},
-          #{desc},
-          #{startTime},
-          #{endTime},
-          #{registerStartTime},
-          #{registerEndTime},
-          #{password},
-          #{sponsor},
-          #{contestType},
-          #{createTime}
+        title,
+        `desc`,
+        start_time,
+        end_time,
+        register_start_time,
+        register_end_time,
+        password,
+        sponsor,
+        contest_type,
+        create_time
+        ) VALUES (
+        #{title},
+        #{desc},
+        #{startTime},
+        #{endTime},
+        #{registerStartTime},
+        #{registerEndTime},
+        #{password},
+        #{sponsor},
+        #{contestType},
+        #{createTime}
         )
     </insert>
 
     <delete id="deleteContest">
-      DELETE FROM t_contest WHERE `contest_id`=#{contestID}
+        DELETE FROM t_contest WHERE `contest_id`=#{contestID}
     </delete>
 
     <update id="updateContest">
-      UPDATE t_contest
-      SET
+        UPDATE t_contest
+        SET
         `title`=#{title},
         `desc`=#{desc},
         `start_time`=#{startTime},
@@ -46,19 +46,19 @@
         `password`=#{password},
         `sponsor`=#{sponsor},
         `contest_type`=#{contestType}
-      WHERE `contest_id`=#{contestID}
+        WHERE `contest_id`=#{contestID}
     </update>
 
     <select id="getContestByID" resultMap="contestMap" resultType="com.xanarry.onlinejudge.model.ContestBean">
-      SELECT * FROM t_contest WHERE `contest_id`=#{contestID}
+        SELECT * FROM t_contest WHERE `contest_id`=#{contestID}
     </select>
 
     <select id="getContestByTitle" resultMap="contestMap" resultType="com.xanarry.onlinejudge.model.ContestBean">
-      SELECT * FROM t_contest WHERE `title`=#{title}
+        SELECT * FROM t_contest WHERE `title`=#{title}
     </select>
 
     <select id="getContestList" resultMap="contestMap" resultType="com.xanarry.onlinejudge.model.ContestBean">
-      SELECT * FROM t_contest ORDER BY end_time DESC, start_time ASC limit #{start}, #{count}
+        SELECT * FROM t_contest ORDER BY end_time DESC, start_time ASC limit #{start}, #{count}
     </select>
 
     <select id="getCount" resultType="java.lang.Integer">

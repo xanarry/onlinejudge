@@ -28,30 +28,30 @@
     </insert>
 
     <delete id="deleteJudgeDetail">
-      DELETE * FROM t_judge_detail WHERE submit_id = #{submitID}
+        DELETE * FROM t_judge_detail WHERE submit_id = #{submitID}
     </delete>
 
     <update id="updateJudegeDetail">
-      UPDATE t_judge_detail
-      SET
-      `submit_id`     = #{newsubmitID}
-      `test_point_id` = #{newtestPointID}
-      `time_consume`  = #{newtimeConsume}
-      `mem_consume`   = #{newmemConsume}
-      `return_val`    = #{newreturnVal}
-      `result`        = #{newresult}
-      WHERE submit_id = #{newJudgeDetailsubmitID}
+        UPDATE t_judge_detail
+        SET
+        `submit_id` = #{newsubmitID}
+        `test_point_id` = #{newtestPointID}
+        `time_consume` = #{newtimeConsume}
+        `mem_consume` = #{newmemConsume}
+        `return_val` = #{newreturnVal}
+        `result` = #{newresult}
+        WHERE submit_id = #{newJudgeDetailsubmitID}
     </update>
 
     <select id="getJudegeDetailBySubmitID" resultMap="judgeDetailMap"
             resultType="com.xanarry.onlinejudge.model.JudgeDetailBean">
-      SELECT * FROM t_judge_detail WHERE submit_id = #{submitID}
+        SELECT * FROM t_judge_detail WHERE submit_id = #{submitID}
     </select>
 
 
     <select id="getJudgeDetailByTestPointID" resultMap="judgeDetailMap"
             resultType="com.xanarry.onlinejudge.model.JudgeDetailBean">
-      SELECT * FROM t_judge_detail WHERE submit_id = #{submitID} and test_point_id = #{testPointID}
+        SELECT * FROM t_judge_detail WHERE submit_id = #{submitID} and test_point_id = #{testPointID}
     </select>
 
 
